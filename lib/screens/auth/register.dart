@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
+import 'package:salama_users/app/notifiers/auth.notifier.dart';
+import 'package:salama_users/screens/auth/photo_consent_screen.dart';
+import 'package:salama_users/widgets/busy_button.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override
@@ -17,6 +22,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _countryController = TextEditingController();
+  final _plateNoController = TextEditingController();
+  final _addressController = TextEditingController();
 
   // Disposing controllers when done
   @override
@@ -28,30 +36,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _phoneController.dispose();
+    _countryController.dispose();
+    _plateNoController.dispose();
     super.dispose();
-  }
-
-  // Function to handle registration logic
-  void _handleRegistration() {
-    if (_formKey.currentState!.validate()) {
-      // Registration logic can go here
-      String firstName = _firstNameController.text;
-      String lastName = _lastNameController.text;
-      String middleName = _middleNameController.text;
-      String email = _emailController.text;
-      String phone = _phoneController.text;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registered as $firstName $lastName')),
-      );
-
-      // Simulate registration success
-      print('First Name: $firstName');
-      print('Last Name: $lastName');
-      print('Middle Name: $middleName');
-      print('Email: $email');
-      print('Phone: $phone');
-    }
   }
 
   // Email validation
@@ -75,123 +62,192 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Register'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                // First Name
-                TextFormField(
-                  controller: _firstNameController,
-                  decoration: InputDecoration(
-                    labelText: 'First Name',
-                    border: OutlineInputBorder(),
+    return Consumer<AuthNotifier>(
+      builder: (context, AuthNotifier auth, child) => Scaffold(
+        appBar: AppBar(
+          title: Text('Register'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Gap(15),
+                  // First Name
+                  TextFormField(
+                    controller: _firstNameController,
+                    decoration: InputDecoration(
+                      labelText: 'First Name',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your first name';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your first name';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
+                  SizedBox(height: 16.0),
 
-                // Last Name
-                TextFormField(
-                  controller: _lastNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Last Name',
-                    border: OutlineInputBorder(),
+                  // Last Name
+                  TextFormField(
+                    controller: _lastNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Last Name',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your last name';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your last name';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
+                  SizedBox(height: 16.0),
 
-                // Middle Name
-                TextFormField(
-                  controller: _middleNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Middle Name',
-                    border: OutlineInputBorder(),
+                  // Middle Name
+                  TextFormField(
+                    controller: _middleNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Middle Name',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                SizedBox(height: 16.0),
+                  SizedBox(height: 16.0),
 
-                // Email
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
+                  TextFormField(
+                    controller: _countryController,
+                    decoration: InputDecoration(
+                      labelText: 'Country',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your country';
+                      }
+                      return null;
+                    },
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: _validateEmail,
-                ),
-                SizedBox(height: 16.0),
+                  SizedBox(height: 16.0),
 
-                // Phone
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: InputDecoration(
-                    labelText: 'Phone',
-                    border: OutlineInputBorder(),
+                  TextFormField(
+                    controller: _addressController,
+                    decoration: InputDecoration(
+                      labelText: 'Address',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your address';
+                      }
+                      return null;
+                    },
                   ),
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
+                  SizedBox(height: 16.0),
 
-                // Password
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
+                  // Email
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: _validateEmail,
                   ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
+                  SizedBox(height: 16.0),
 
-                // Confirm Password
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    border: OutlineInputBorder(),
+                  // Phone
+                  TextFormField(
+                    controller: _phoneController,
+                    decoration: InputDecoration(
+                      labelText: 'Phone',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your phone number';
+                      }
+                      return null;
+                    },
                   ),
-                  obscureText: true,
-                  validator: _validatePasswordMatch,
-                ),
-                SizedBox(height: 24.0),
+                  SizedBox(height: 16.0),
 
-                // Register Button
-                ElevatedButton(
-                  onPressed: _handleRegistration,
-                  child: Text('Register'),
-                ),
-              ],
+                  // Password
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                    ),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 16.0),
+
+                  // Confirm Password
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password',
+                      border: OutlineInputBorder(),
+                    ),
+                    obscureText: true,
+                    validator: _validatePasswordMatch,
+                  ),
+                  SizedBox(height: 30.0),
+
+                  // Register Button
+                  BusyButton(
+                    title: "Proceed",
+                    isLoading: auth.isLoading,
+                    onTap: () async {
+                      if (_formKey.currentState!.validate()) {
+                        FocusScopeNode currentFocus = FocusScope.of(context);
+                        if (!currentFocus.hasPrimaryFocus &&
+                            currentFocus.focusedChild != null) {
+                          currentFocus.focusedChild?.unfocus();
+                        }
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => PhotoConsentScreen(payload: {
+                                  "firstName": _firstNameController.text,
+                                  "lastName": _lastNameController.text,
+                                  "middleName": _middleNameController.text,
+                                  "userType": "driver",
+                                  "phone": _phoneController.text,
+                                  "email": _emailController.text,
+                                  "password": _passwordController.text,
+                                  "rePassword": _confirmPasswordController.text,
+                                  "address": _addressController.text,
+                                  "country": _countryController.text
+                                })));
+                        // await auth.register(context,
+                        //     firstName: _firstNameController.text,
+                        //     lastName: _lastNameController.text,
+                        //     middleName: _middleNameController.text,
+                        //     userType: "driver",
+                        //     phone: _phoneController.text,
+                        //     email: _emailController.text,
+                        //     password: _passwordController.text,
+                        //     rePassword: _confirmPasswordController.text,
+                        //     address: _addressController.text,
+                        //     country: _countryController.text
+                        // );
+                      }
+                    },
+                  )
+                ],
+              ),
             ),
           ),
         ),

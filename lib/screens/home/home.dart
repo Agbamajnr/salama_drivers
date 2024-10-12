@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:salama_users/constants/colors.dart';
 import 'package:salama_users/screens/home/active_drivers_screen.dart';
 import 'package:salama_users/screens/home/history_list.screen.dart';
+import 'package:salama_users/screens/home/home_screen.dart';
 import 'package:salama_users/screens/home/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // List of pages (screens) for each navigation tab
   final List<Widget> _pages = [
-    NearbyDriversScreen(),
+    const DashboardScreen(),
     RideHistoryScreen(),
     ProfileScreen()
   ];
@@ -65,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
 class HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text(
         'Home Screen',
         style: TextStyle(fontSize: 24),
@@ -78,7 +79,7 @@ class HomeTab extends StatelessWidget {
 class HistoryTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text(
         'History Screen',
         style: TextStyle(fontSize: 24),
@@ -91,7 +92,7 @@ class HistoryTab extends StatelessWidget {
 class ProfileTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text(
         'Profile Screen',
         style: TextStyle(fontSize: 24),
