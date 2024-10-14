@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:salama_users/constants/colors.dart';
+import 'package:salama_users/widgets/slide_to_action.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -29,17 +30,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 children: [
                   Gap(30),
+                  // SizedBox(
+                  //   width: 250,
+                  //   child: SlideToActionScreen(),
+                  // )
                 ],
               ),
             ),
             // List of drivers
-            Expanded(
-              flex: 2,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                decoration: const BoxDecoration(color: AppColors.white),
-              ),
-            ),
+            // Expanded(
+            //   flex: 2,
+            //   child: Container(
+            //     padding: const EdgeInsets.symmetric(horizontal: 15),
+            //     decoration: const BoxDecoration(color: AppColors.white),
+            //   ),
+            // ),
           ],
         ),
       ),

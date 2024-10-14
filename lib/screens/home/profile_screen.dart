@@ -52,7 +52,7 @@ class ProfileScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${user['firstName']} ${user['lastName']} ${user['middleName'] ?? ""}',
+                  '${user?['firstName']} ?? " ${user?['lastName']} ?? " ${user?['middleName'] ?? ""}',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Row(
@@ -62,9 +62,9 @@ class ProfileScreen extends StatelessWidget {
                     Text('5.0 Rating'),
                   ],
                 ),
-                Text('${user['phone']}',
+                Text('${user?['phone'] ?? ""}',
                     style: TextStyle(color: Colors.black54)),
-                Text('${user['email'] ?? ""}',
+                Text('${user?['email'] ?? ""}',
                     style: TextStyle(color: Colors.black54)),
               ],
             ),
