@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:path/path.dart';
@@ -10,8 +12,9 @@ import 'package:salama_users/screens/auth/profile_photo_consent_screen.dart';
 import 'package:salama_users/widgets/busy_button.dart';
 
 class CameraScreen extends StatefulWidget {
+  final String documentType;
   final Map<String, dynamic> payload;
-  const CameraScreen({super.key, required this.payload});
+  const CameraScreen({super.key, required this.payload, required this.documentType});
   @override
   _CameraScreenState createState() => _CameraScreenState();
 }
@@ -45,6 +48,79 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
+  Dio dio = Dio();
+  String fileUploadUrl = 'https://api.achievify.net/upload/files';
+
+  bool _isLoading = false;
+
+  setLoading(){
+    setState(() {
+      _isLoading = !_isLoading;
+    });
+  }
+
+  dynamic _uploadedUrl;
+
+  Future<void> uploadFile(File file) async {
+    try {
+      setLoading();
+      String fileName = basename(file.path);
+      var data = FormData.fromMap({
+        'files': [
+          await MultipartFile.fromFile(file.path, filename: fileName)
+        ],
+
+      });
+
+      var dio = Dio();
+      var response = await dio.request(
+        fileUploadUrl,
+        options: Options(
+          method: 'POST',
+          contentType: 'multipart/form-data'
+        ),
+        data: data,
+      );
+
+      // if (response.statusCode == 200) {
+      //   print(json.encode(response.data));
+      // }
+      // else {
+      //   print(response.statusMessage);
+      // }
+      // FormData formData = FormData.fromMap({
+      //   "files": await MultipartFile.fromFile(file.path, filename: fileName),
+      // });
+      //
+      // // Make the POST request
+      // Response response = await dio.post(
+      //   fileUploadUrl,
+      //   data: formData,
+      //   options: Options(
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   ),
+      // );
+
+      setLoading();
+
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+
+        final data = json.decode(response.data);
+        _uploadedUrl = data['data']['upload_result']['Location'];
+        // Handle the success response
+        print("File uploaded successfully: ${response.data}");
+      } else {
+        // Handle the error
+        print("Failed to upload file: ${response.statusMessage}");
+      }
+    } catch (e) {
+      print("Error occurred during file upload: $e");
+    }
+  }
+
   @override
   void dispose() {
     _controller?.dispose();
@@ -63,15 +139,6 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  Future<void> _submitPhoto() async {
-    // Submit the photo logic
-    if (_imageFile != null) {
-      final directory = await getApplicationDocumentsDirectory();
-      final filePath = join(directory.path, '${DateTime.now()}.png');
-      await _imageFile!.saveTo(filePath);
-      print('Photo saved to $filePath');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,10 +202,24 @@ class _CameraScreenState extends State<CameraScreen> {
               children: [
                 BusyButton(
                   title: "Submit Photo",
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
+                  isLoading: _isLoading,
+                  onTap: () async{
+                    File file = File(_imageFile!.path);
+                    await uploadFile(file);
+                    setState(() {
+                      _isLoading = false;
+                    });
+
+
+                    await Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => ProfilePhotoConsentScreen(
-                            payload: widget.payload)));
+                            payload: {
+                              ...widget.payload,
+                              "internationalPassport": _uploadedUrl ?? "",
+                              "drivingLicense": _uploadedUrl ?? "",
+                              "votersCard": _uploadedUrl ?? "",
+                              "nin": _uploadedUrl ?? ""
+                            })));
                   },
                 ),
                 TextButton(

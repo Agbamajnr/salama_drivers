@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:salama_users/constants/colors.dart';
+import 'package:salama_users/screens/auth/phot_camera_screen.dart';
 import 'package:salama_users/widgets/busy_button.dart';
 
 class ProfilePhotoConsentScreen extends StatefulWidget {
@@ -24,8 +25,8 @@ class _ProfilePhotoConsentScreenState extends State<ProfilePhotoConsentScreen> {
             children: [
               const Gap(30),
               SizedBox(height: 300, child: Image.asset("assets/image 130.png")),
-              const Text(
-                "Thanks Dennis, now time for a photo of you",
+              Text(
+                "Thanks ${widget.payload['firstName'] ?? ""}, now time for a photo of you",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
               ),
               const Gap(20),
@@ -38,9 +39,9 @@ class _ProfilePhotoConsentScreenState extends State<ProfilePhotoConsentScreen> {
               BusyButton(
                 title: "Got it",
                 onTap: () {
-                  // Navigator.of(context).push(MaterialPageRoute(
-                  //     builder: (context) =>
-                  //         IdPhotoPage(payload: widget.payload)));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          ProfilePhotoCameraScreen(payload: widget.payload)));
                 },
               ),
               Gap(20)

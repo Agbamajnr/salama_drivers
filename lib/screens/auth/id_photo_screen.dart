@@ -38,6 +38,7 @@ class IdPhotoPage extends StatelessWidget {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => CameraScreen(
                             payload: payload,
+                        documentType: "internationalPassport",
                           )));
                   // Handle tap
                 },
@@ -48,6 +49,7 @@ class IdPhotoPage extends StatelessWidget {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => CameraScreen(
                             payload: payload,
+                        documentType: "drivingLicense",
                           )));
                   // Handle tap
                 },
@@ -58,6 +60,7 @@ class IdPhotoPage extends StatelessWidget {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => CameraScreen(
                             payload: payload,
+                            documentType: "votersCard",
                           )));
                   // Handle tap
                 },
@@ -68,6 +71,7 @@ class IdPhotoPage extends StatelessWidget {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => CameraScreen(
                             payload: payload,
+                        documentType: "nin",
                           )));
                   // Handle tap
                 },

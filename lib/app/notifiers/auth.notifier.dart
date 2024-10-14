@@ -8,6 +8,7 @@ import 'package:salama_users/app/utils/app_snack_bar.dart';
 import 'package:salama_users/app/utils/logger.dart';
 import 'package:salama_users/locator.dart';
 import 'package:salama_users/routes/router_names.dart';
+import 'package:salama_users/screens/auth/registration_confirmed_screen.dart';
 import 'package:salama_users/screens/auth/verify_user_screen.dart';
 import 'package:salama_users/screens/home/home.dart';
 
@@ -122,6 +123,15 @@ class AuthNotifier extends ChangeNotifier {
           _db.saveUser(_loginData?['user']);
         }
         Logger().d(_loginData);
+        await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => RegistrationConfirmedScreen(
+                payload: {
+                 ..._loginData ?? {
+                   firstName: firstName,
+                   lastName: lastName,
+                   middleName: middleName
+                 }
+                })));
         _errorMessage = null;
       } else {
         _errorMessage = 'Failed to login';
@@ -242,4 +252,6 @@ class AuthNotifier extends ChangeNotifier {
     _db.deleteUser();
     await Navigator.pushNamedAndRemoveUntil(context, Routes.login, predicate);
   }
+
+
 }
