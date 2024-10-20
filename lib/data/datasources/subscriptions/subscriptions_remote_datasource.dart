@@ -4,6 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:salama_users/data/models/subscriptions/address_model.dart';
 import 'package:salama_users/data/models/subscriptions/booking_model.dart';
 import 'package:salama_users/data/models/subscriptions/report_model.dart';
+import 'package:salama_users/data/models/subscriptions/subscribe_model.dart';
 import 'package:salama_users/data/models/subscriptions/subscription_model.dart';
 
 import '../../../core/exception/__export.dart';
@@ -26,7 +27,7 @@ abstract class SubscriptionsRemoteDatasource {
     required int? perPage,
   });
   Future<BookingModel> fetchSingleBooking({required String bookingId});
-   Future<BookingModel> fetchActiveBooking({required String rideStatus});
+  Future<BookingModel> fetchActiveBooking({required String rideStatus});
   Future<void> cancelBooking({
     required String bookingId,
   });
@@ -48,6 +49,10 @@ abstract class SubscriptionsRemoteDatasource {
     required double longitude,
     required double latitude,
     required double radius,
+  });
+
+  Future<PaystackData> subscribe({
+    required String planId,
   });
 }
 
@@ -196,6 +201,7 @@ class SubscriptionRemoteDatasourceImpl
       throw NoInternetException();
     }
   }
+
   @override
   Future<BookingModel> fetchActiveBooking({required String rideStatus}) async {
     if (await networkInfo.isConnected) {
@@ -213,7 +219,7 @@ class SubscriptionRemoteDatasourceImpl
   @override
   Future<void> acceptRide({required String bookingId}) async {
     if (await networkInfo.isConnected) {
-       final body = {
+      final body = {
         "tripId": bookingId,
       };
       final response = await httpRequester.put(
@@ -356,6 +362,26 @@ class SubscriptionRemoteDatasourceImpl
       Logger().d(response.data);
       return List<AddressModel>.from(
           (response.data['data'] as List).map((x) => AddressModel.fromJson(x)));
+    } else {
+      throw NoInternetException();
+    }
+  }
+
+  @override
+  Future<PaystackData> subscribe({
+    required String planId,
+  }) async {
+    if (await networkInfo.isConnected) {
+      final body = {
+        "planId": planId,
+      };
+      final response = await httpRequester.post(
+        endpoint: '/taxi/subscriptions/user/subscribe',
+        token: (await secureStorage.getToken()),
+        body: body,
+      );
+
+      return PaystackData.fromJson(response.data['data']['paystackData']);
     } else {
       throw NoInternetException();
     }

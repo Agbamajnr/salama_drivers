@@ -37,9 +37,9 @@ class BusyButton extends StatelessWidget {
         child: Center(
           child: isLoading
               ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: const CircularProgressIndicator(color: Colors.white),
-              )
+                  padding: const EdgeInsets.all(8.0),
+                  child: const CircularProgressIndicator(color: Colors.white),
+                )
               : Text(
                   title,
                   style: TextStyle(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:salama_users/core/extensions/ctx_extension.dart';
 import 'package:salama_users/core/styles/colors.dart';
 import 'package:salama_users/domain/entities/auth/person.dart';
+import 'package:salama_users/presentation/screens/home/about_page.screen.dart';
+import 'package:salama_users/presentation/screens/home/edit_profile_screen.dart';
 import 'package:salama_users/presentation/widgets/network_image.dart';
 
 import '../../../core/alerts/__export.dart';
@@ -97,7 +99,11 @@ class ProfileScreen extends StatelessWidget {
           Icons.person,
           'Personal Info',
           () {
-            AppFlushbar.show('Error in accessing info. Contact Dev');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const ProfileUpdateScreen()),
+            );
           },
         ),
         _buildListTile(
@@ -121,7 +127,10 @@ class ProfileScreen extends StatelessWidget {
           Icons.info_outline,
           'About',
           () {
-            AppFlushbar.show('Error in accessing info. Contact Dev');
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AboutUsPage()),
+            );
           },
         ),
         _buildListTile(

@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:salama_users/data/models/subscriptions/subscribe_model.dart';
 import 'package:salama_users/domain/entities/subscriptions/address.dart';
 import 'package:salama_users/domain/entities/subscriptions/booking.dart';
 import 'package:salama_users/domain/entities/subscriptions/report.dart';
@@ -23,7 +24,7 @@ abstract class SubscriptionsRepository {
   });
   Future<Either<Failure, Booking>> fetchSingleBooking(
       {required String bookingId});
-    Future<Either<Failure, Booking>> fetchActiveBooking(
+  Future<Either<Failure, Booking>> fetchActiveBooking(
       {required String rideStatus});
   Future<Either<Failure, void>> acceptRide({required String bookingId});
   Future<Either<Failure, void>> cancelBooking({
@@ -48,4 +49,6 @@ abstract class SubscriptionsRepository {
       {required double longitude,
       required double latitude,
       required double radius});
+
+  Future<Either<Failure, PaystackData>> subscribe({required String planId});
 }

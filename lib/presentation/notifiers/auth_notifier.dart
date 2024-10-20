@@ -136,6 +136,7 @@ class AuthNotifier extends ChangeNotifier {
         return false;
       },
       (r) {
+        checkSavedUser();
         AppFlushbar.show(r, isError: false);
         return true;
       },

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
+import 'package:salama_users/app/utils/logger.dart';
+import 'package:salama_users/data/models/subscriptions/subscribe_model.dart';
 import 'package:salama_users/domain/entities/auth/location.dart';
 import 'package:salama_users/domain/entities/subscriptions/address.dart';
 import 'package:salama_users/domain/entities/subscriptions/booking.dart';
@@ -15,6 +17,8 @@ import 'package:salama_users/domain/usecases/subscriptions/fetch_report_usecase.
 import 'package:salama_users/domain/usecases/subscriptions/fetch_single_post_usecase.dart';
 import 'package:salama_users/domain/usecases/subscriptions/fetch_user_subscriptions.dart';
 import 'package:salama_users/domain/usecases/subscriptions/report_booking_usecase.dart';
+import 'package:salama_users/domain/usecases/subscriptions/subscribe_usecase.dart';
+import 'package:salama_users/presentation/screens/home/paystack_webview.dart';
 import '../../core/alerts/__export.dart';
 import '../../core/exception/__export.dart';
 import '../../core/local_storage/__export.dart';
@@ -44,7 +48,8 @@ class SubscriptionsNotifier extends ChangeNotifier {
       required this.completeBookingUsecase,
       required this.reportBookingUsecase,
       required this.fetchReportUsecase,
-      required this.fetchAddressCoordinateUsecase});
+      required this.fetchAddressCoordinateUsecase,
+      required this.subscribeUsecase});
   final GetCurrentPositionUsecase currentPositionUsecase;
   final CreateSubscriptionUsecase createSubscriptionUsecase;
   final FetchSubscriptionUsecase fetchSubscriptionUsecase;
@@ -59,6 +64,7 @@ class SubscriptionsNotifier extends ChangeNotifier {
   final FetchAddressCoordinateUsecase fetchAddressCoordinateUsecase;
   final FetchSinglebookingUsecase fetchSinglebookingUsecase;
   final FetchActivebookingUsecase fetchActivebookingUsecase;
+  final SubscribeUsecase subscribeUsecase;
 
   final currentPosition = GenericStore<Location?>(null);
   final subscriptions = GenericStore<List<Subscription>?>(null);
@@ -262,6 +268,34 @@ class SubscriptionsNotifier extends ChangeNotifier {
       },
       (r) {
         address.emit(r);
+      },
+    );
+  }
+
+  Future<PaystackData?> subscribe(
+    BuildContext context, {
+    required String planId,
+  }) async {
+    unawaited(PopupLoader().show(navKey.currentContext!));
+    final response = await subscribeUsecase(
+      SubscribeUsecaseParams(planId: planId),
+    );
+    logger.d(response);
+    response.fold(
+      (l) {
+        nav.pop();
+        AppFlushbar.show(FailureToMessage.mapFailureToMessage(l));
+        return null;
+      },
+      (r) {
+        nav.pop();
+        logger.d(r.authorizationUrl);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  CustomWebView(authorizationUrl: r.authorizationUrl)),
+        );
       },
     );
   }

@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:salama_users/data/models/subscriptions/address_model.dart';
 import 'package:salama_users/data/models/subscriptions/booking_model.dart';
 import 'package:salama_users/data/models/subscriptions/report_model.dart';
+import 'package:salama_users/data/models/subscriptions/subscribe_model.dart';
 import 'package:salama_users/data/models/subscriptions/subscription_model.dart';
 import '../../../core/exception/__export.dart';
 import '../../../core/local_storage/__export.dart';
@@ -71,8 +72,7 @@ class SubscriptionRepositoryImpl implements SubscriptionsRepository {
   }
 
   @override
-  Future<Either<Failure, void>> acceptRide(
-      {required String bookingId}) async {
+  Future<Either<Failure, void>> acceptRide({required String bookingId}) async {
     try {
       final response = await remoteDatasource.acceptRide(bookingId: bookingId);
       return Right(response);
@@ -115,6 +115,7 @@ class SubscriptionRepositoryImpl implements SubscriptionsRepository {
       );
     }
   }
+
   @override
   Future<Either<Failure, BookingModel>> fetchActiveBooking(
       {required String rideStatus}) async {
@@ -128,6 +129,7 @@ class SubscriptionRepositoryImpl implements SubscriptionsRepository {
       );
     }
   }
+
   @override
   Future<Either<Failure, void>> cancelBooking({
     required String bookingId,
@@ -229,6 +231,20 @@ class SubscriptionRepositoryImpl implements SubscriptionsRepository {
       final response = await remoteDatasource.fetchAddressFromCoordinate(
           longitude: longitude, latitude: latitude, radius: radius);
 
+      return Right(response);
+    } catch (e) {
+      return Left(
+        ExceptionHandler.networkError(e),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, PaystackData>> subscribe({
+    required String planId,
+  }) async {
+    try {
+      final response = await remoteDatasource.subscribe(planId: planId);
       return Right(response);
     } catch (e) {
       return Left(

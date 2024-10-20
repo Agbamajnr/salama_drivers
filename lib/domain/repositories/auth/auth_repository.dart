@@ -31,7 +31,7 @@ abstract class AuthRepository {
       required double latitude});
 
   Future<Either<Failure, String>> requestOTP({required String email});
-    Future<Either<Failure, void>> verifyEmail({
+  Future<Either<Failure, void>> verifyEmail({
     required String otp,
     required String email,
   });

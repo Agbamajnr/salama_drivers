@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -15,6 +16,9 @@ import 'core/routes/router_names.dart';
 GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 final nav = Navigator.of(navKey.currentContext!);
 void main() async {
+  // if (Platform.isAndroid) {
+  //   WebViewPlatform.instance = SurfaceAndroidWebView();
+  // }
   if (environment == Environment.staging) {
     await dotenv.load(fileName: '.env.staging');
   }
@@ -22,7 +26,7 @@ void main() async {
     await dotenv.load();
   }
   configureDependencies();
-     unawaited(sl<SubscriptionsNotifier>().getCurentPosition());
+  unawaited(sl<SubscriptionsNotifier>().getCurentPosition());
   runApp(const MyApp());
 }
 
@@ -34,6 +38,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: providers,
       child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           theme: ThemeData(
             colorScheme:
                 ColorScheme.fromSeed(seedColor: AppColors.primaryColor),

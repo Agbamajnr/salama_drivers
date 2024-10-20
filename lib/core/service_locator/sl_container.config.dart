@@ -75,6 +75,8 @@ import 'package:salama_users/domain/usecases/subscriptions/report_booking_usecas
     as _i284;
 import 'package:salama_users/domain/usecases/subscriptions/start_booking_usecase.dart'
     as _i465;
+import 'package:salama_users/domain/usecases/subscriptions/subscribe_usecase.dart'
+    as _i368;
 import 'package:salama_users/domain/usecases/subscriptions/update_report_usecase.dart'
     as _i186;
 import 'package:salama_users/presentation/notifiers/auth_notifier.dart'
@@ -125,23 +127,23 @@ extension GetItInjectableX on _i174.GetIt {
               networkInfo: gh<_i172.InternetConnection>(),
               secureStorage: gh<_i815.SecureStorage>(),
             ));
-    gh.lazySingleton<_i102.GetCurrentPositionUsecase>(() =>
-        _i102.GetCurrentPositionUsecase(
-            authRepository: gh<_i127.AuthRepository>()));
-    gh.lazySingleton<_i1050.GetSavedUserUsecase>(() =>
-        _i1050.GetSavedUserUsecase(authRepository: gh<_i127.AuthRepository>()));
+    gh.lazySingleton<_i807.VerifyEmailUsecase>(() =>
+        _i807.VerifyEmailUsecase(authRepository: gh<_i127.AuthRepository>()));
     gh.lazySingleton<_i755.LoginUsecase>(
         () => _i755.LoginUsecase(authRepository: gh<_i127.AuthRepository>()));
-    gh.lazySingleton<_i92.LogoutUsecase>(
-        () => _i92.LogoutUsecase(authRepository: gh<_i127.AuthRepository>()));
+    gh.lazySingleton<_i523.RequestOTPUsecase>(() =>
+        _i523.RequestOTPUsecase(authRepository: gh<_i127.AuthRepository>()));
     gh.lazySingleton<_i140.RegisterUsecase>(() =>
         _i140.RegisterUsecase(authRepository: gh<_i127.AuthRepository>()));
     gh.lazySingleton<_i1057.DeleteUserUsecase>(() =>
         _i1057.DeleteUserUsecase(authRepository: gh<_i127.AuthRepository>()));
-    gh.lazySingleton<_i523.RequestOTPUsecase>(() =>
-        _i523.RequestOTPUsecase(authRepository: gh<_i127.AuthRepository>()));
-    gh.lazySingleton<_i807.VerifyEmailUsecase>(() =>
-        _i807.VerifyEmailUsecase(authRepository: gh<_i127.AuthRepository>()));
+    gh.lazySingleton<_i1050.GetSavedUserUsecase>(() =>
+        _i1050.GetSavedUserUsecase(authRepository: gh<_i127.AuthRepository>()));
+    gh.lazySingleton<_i102.GetCurrentPositionUsecase>(() =>
+        _i102.GetCurrentPositionUsecase(
+            authRepository: gh<_i127.AuthRepository>()));
+    gh.lazySingleton<_i92.LogoutUsecase>(
+        () => _i92.LogoutUsecase(authRepository: gh<_i127.AuthRepository>()));
     gh.lazySingleton<_i421.ChangePasswordUsecase>(() =>
         _i421.ChangePasswordUsecase(repository: gh<_i127.AuthRepository>()));
     gh.lazySingleton<_i891.DashboardUsecase>(
@@ -167,43 +169,45 @@ extension GetItInjectableX on _i174.GetIt {
               secureStorage: gh<_i815.SecureStorage>(),
               remoteDatasource: gh<_i286.SubscriptionsRemoteDatasource>(),
             ));
-    gh.lazySingleton<_i641.AcceptRideUsecase>(() => _i641.AcceptRideUsecase(
+    gh.lazySingleton<_i82.FetchBookingUsecase>(() => _i82.FetchBookingUsecase(
         repository: gh<_i531.SubscriptionsRepository>()));
-    gh.lazySingleton<_i787.CancelBookingUsecase>(() =>
-        _i787.CancelBookingUsecase(
-            repository: gh<_i531.SubscriptionsRepository>()));
     gh.lazySingleton<_i489.CompleteBookingUsecase>(() =>
         _i489.CompleteBookingUsecase(
             repository: gh<_i531.SubscriptionsRepository>()));
+    gh.lazySingleton<_i641.AcceptRideUsecase>(() => _i641.AcceptRideUsecase(
+        repository: gh<_i531.SubscriptionsRepository>()));
+    gh.lazySingleton<_i284.ReportBookingUsecase>(() =>
+        _i284.ReportBookingUsecase(
+            repository: gh<_i531.SubscriptionsRepository>()));
+    gh.lazySingleton<_i325.FetchActivebookingUsecase>(() =>
+        _i325.FetchActivebookingUsecase(
+            repository: gh<_i531.SubscriptionsRepository>()));
+    gh.lazySingleton<_i362.FetchSubscriptionUsecase>(() =>
+        _i362.FetchSubscriptionUsecase(
+            repository: gh<_i531.SubscriptionsRepository>()));
+    gh.lazySingleton<_i257.FetchSinglebookingUsecase>(() =>
+        _i257.FetchSinglebookingUsecase(
+            repository: gh<_i531.SubscriptionsRepository>()));
+    gh.lazySingleton<_i186.UpdateReportUsecase>(() => _i186.UpdateReportUsecase(
+        repository: gh<_i531.SubscriptionsRepository>()));
+    gh.lazySingleton<_i465.StartBookingUsecase>(() => _i465.StartBookingUsecase(
+        repository: gh<_i531.SubscriptionsRepository>()));
     gh.lazySingleton<_i230.CreateSubscriptionUsecase>(() =>
         _i230.CreateSubscriptionUsecase(
             repository: gh<_i531.SubscriptionsRepository>()));
     gh.lazySingleton<_i349.FetchAddressCoordinateUsecase>(() =>
         _i349.FetchAddressCoordinateUsecase(
             repository: gh<_i531.SubscriptionsRepository>()));
-    gh.lazySingleton<_i82.FetchBookingUsecase>(() => _i82.FetchBookingUsecase(
-        repository: gh<_i531.SubscriptionsRepository>()));
-    gh.lazySingleton<_i843.FetchReportUsecase>(() => _i843.FetchReportUsecase(
-        repository: gh<_i531.SubscriptionsRepository>()));
-    gh.lazySingleton<_i362.FetchSubscriptionUsecase>(() =>
-        _i362.FetchSubscriptionUsecase(
-            repository: gh<_i531.SubscriptionsRepository>()));
     gh.lazySingleton<_i522.FetchUserSubscriptionUsecase>(() =>
         _i522.FetchUserSubscriptionUsecase(
             repository: gh<_i531.SubscriptionsRepository>()));
-    gh.lazySingleton<_i284.ReportBookingUsecase>(() =>
-        _i284.ReportBookingUsecase(
-            repository: gh<_i531.SubscriptionsRepository>()));
-    gh.lazySingleton<_i465.StartBookingUsecase>(() => _i465.StartBookingUsecase(
+    gh.lazySingleton<_i368.SubscribeUsecase>(() => _i368.SubscribeUsecase(
         repository: gh<_i531.SubscriptionsRepository>()));
-    gh.lazySingleton<_i186.UpdateReportUsecase>(() => _i186.UpdateReportUsecase(
+    gh.lazySingleton<_i787.CancelBookingUsecase>(() =>
+        _i787.CancelBookingUsecase(
+            repository: gh<_i531.SubscriptionsRepository>()));
+    gh.lazySingleton<_i843.FetchReportUsecase>(() => _i843.FetchReportUsecase(
         repository: gh<_i531.SubscriptionsRepository>()));
-    gh.lazySingleton<_i257.FetchSinglebookingUsecase>(() =>
-        _i257.FetchSinglebookingUsecase(
-            repository: gh<_i531.SubscriptionsRepository>()));
-    gh.lazySingleton<_i325.FetchActivebookingUsecase>(() =>
-        _i325.FetchActivebookingUsecase(
-            repository: gh<_i531.SubscriptionsRepository>()));
     gh.lazySingleton<_i1071.SubscriptionsNotifier>(
         () => _i1071.SubscriptionsNotifier(
               createSubscriptionUsecase: gh<_i230.CreateSubscriptionUsecase>(),
@@ -222,6 +226,7 @@ extension GetItInjectableX on _i174.GetIt {
               fetchReportUsecase: gh<_i843.FetchReportUsecase>(),
               fetchAddressCoordinateUsecase:
                   gh<_i349.FetchAddressCoordinateUsecase>(),
+              subscribeUsecase: gh<_i368.SubscribeUsecase>(),
             ));
     return this;
   }

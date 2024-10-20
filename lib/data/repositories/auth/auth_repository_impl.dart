@@ -9,20 +9,16 @@ import '../../../domain/repositories/auth/auth_repository.dart';
 import '../../datasources/auth/auth_remote_datasource.dart';
 import '../../models/auth/person_model.dart';
 
-
 @LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
   final SecureStorage secureStorage;
   final AuthRemoteDatasource remoteDatasource;
-   final DeviceLocation deviceLocation;
+  final DeviceLocation deviceLocation;
 
-
-  AuthRepositoryImpl({
-    required this.secureStorage,
-    required this.remoteDatasource,
-    required this.deviceLocation
-   
-  });
+  AuthRepositoryImpl(
+      {required this.secureStorage,
+      required this.remoteDatasource,
+      required this.deviceLocation});
   @override
   Future<Either<Failure, PersonModel>> login({
     required String email,
@@ -30,8 +26,8 @@ class AuthRepositoryImpl implements AuthRepository {
     required String device,
   }) async {
     try {
-      final response =
-          await remoteDatasource.login(email: email, password: password, device: device);
+      final response = await remoteDatasource.login(
+          email: email, password: password, device: device);
       return Right(response);
     } catch (e) {
       return Left(
@@ -44,6 +40,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<PersonModel?> getSavedUser() {
     return secureStorage.getUser();
   }
+
   @override
   Future<Either<Failure, PersonModel>> register(
       {required Map<String, dynamic> data}) async {
@@ -56,10 +53,11 @@ class AuthRepositoryImpl implements AuthRepository {
       );
     }
   }
+
   @override
   Future<void> logout() => secureStorage.clearUser();
 
-    @override
+  @override
   Future<Position?> getCurrentPosition() async {
     try {
       final position = await deviceLocation.getCurrentPosition();
@@ -70,18 +68,22 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-    @override
-  Future<Either<Failure, String>> updateUserDetails({
-    required String firstName,
+  @override
+  Future<Either<Failure, String>> updateUserDetails(
+      {required String firstName,
       required String lastName,
       required String middleName,
       required String firebaseToken,
       required double longitude,
-      required double latitude
-  }) async {
+      required double latitude}) async {
     try {
-      final response =
-          await remoteDatasource.updateUserDetails(firstName: firstName, lastName: lastName, middleName: middleName, firebaseToken: firebaseToken, longitude: longitude, latitude: latitude);
+      final response = await remoteDatasource.updateUserDetails(
+          firstName: firstName,
+          lastName: lastName,
+          middleName: middleName,
+          firebaseToken: firebaseToken,
+          longitude: longitude,
+          latitude: latitude);
       return Right(response);
     } catch (e) {
       return Left(
@@ -102,18 +104,18 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-
-      @override
-  Future<Either<Failure, String>> dashboard({
-   
-      required bool  isActive,
+  @override
+  Future<Either<Failure, String>> dashboard(
+      {required bool isActive,
       required String firebaseToken,
       required double longitude,
-      required double latitude
-  }) async {
+      required double latitude}) async {
     try {
-      final response =
-          await remoteDatasource.dashboard(isActive: isActive,firebaseToken: firebaseToken, longitude: longitude, latitude: latitude);
+      final response = await remoteDatasource.dashboard(
+          isActive: isActive,
+          firebaseToken: firebaseToken,
+          longitude: longitude,
+          latitude: latitude);
       return Right(response);
     } catch (e) {
       return Left(
@@ -122,7 +124,6 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-  
   @override
   Future<Either<Failure, String>> requestOTP({required String email}) async {
     try {
@@ -134,18 +135,15 @@ class AuthRepositoryImpl implements AuthRepository {
       );
     }
   }
+
   @override
-  Future<Either<Failure, String>> changePassword({
-    required String password,
-    required String rePassword,
-    required String otp
-  }) async {
+  Future<Either<Failure, String>> changePassword(
+      {required String password,
+      required String rePassword,
+      required String otp}) async {
     try {
       final response = await remoteDatasource.changePassword(
-        password: password,
-        rePassword: rePassword,
-        otp: otp
-      );
+          password: password, rePassword: rePassword, otp: otp);
       return Right(response);
     } catch (e) {
       return Left(
@@ -154,7 +152,7 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-    @override
+  @override
   Future<Either<Failure, void>> verifyEmail({
     required String otp,
     required String email,
@@ -171,5 +169,4 @@ class AuthRepositoryImpl implements AuthRepository {
       );
     }
   }
-
 }

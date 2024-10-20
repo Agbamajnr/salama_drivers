@@ -172,6 +172,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your phone number';
                     }
+                    if (value.length != 11) {
+                      return '11 digits required';
+                    }
                     return null;
                   },
                 ),

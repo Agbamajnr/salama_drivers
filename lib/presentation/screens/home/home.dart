@@ -20,8 +20,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-
-
   // List of pages (screens) for each navigation tab
   final List<Widget> _pages = [
     const DashboardScreen(),
@@ -46,11 +44,11 @@ class _HomeScreenState extends State<HomeScreen> {
         children: _pages,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        fixedColor: AppColors.white,
+        // fixedColor: AppColors.white,
         selectedIconTheme: IconThemeData(color: AppColors.primaryColor),
         unselectedIconTheme: IconThemeData(color: AppColors.grey),
         selectedLabelStyle: TextStyle(color: AppColors.primaryColor),
-        unselectedLabelStyle: TextStyle(color: AppColors.grey),
+        unselectedLabelStyle: TextStyle(color: AppColors.primaryBlue),
         type: BottomNavigationBarType.fixed,
         backgroundColor: AppColors.white,
         showSelectedLabels: true,
@@ -59,18 +57,34 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
+            activeIcon: Icon(
+              Icons.home,
+              color: AppColors.primaryColor,
+            ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
+            activeIcon: Icon(
+              Icons.history,
+              color: AppColors.primaryColor,
+            ),
             label: 'Trips',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.subscriptions_outlined),
+            activeIcon: Icon(
+              Icons.subscriptions_outlined,
+              color: AppColors.primaryColor,
+            ),
             label: 'Subscriptions',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
+            activeIcon: Icon(
+              Icons.person,
+              color: AppColors.primaryColor,
+            ),
             label: 'Profile',
           ),
         ],

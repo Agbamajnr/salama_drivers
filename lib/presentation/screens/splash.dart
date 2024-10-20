@@ -14,11 +14,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 100), () {
-      
+    Future.delayed(const Duration(milliseconds: 1000), () {
       context.auth.checkSavedUser().then((value) {
         if (value) {
-          
           context.nav.pushReplacementNamed(Routes.home);
         } else {
           context.nav.pushReplacementNamed(Routes.login);
