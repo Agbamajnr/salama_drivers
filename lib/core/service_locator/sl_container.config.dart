@@ -227,6 +227,7 @@ extension GetItInjectableX on _i174.GetIt {
               fetchAddressCoordinateUsecase:
                   gh<_i349.FetchAddressCoordinateUsecase>(),
               subscribeUsecase: gh<_i368.SubscribeUsecase>(),
+              repository: gh<_i531.SubscriptionsRepository>(),
             ));
     return this;
   }

@@ -63,6 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           style: TextStyle(color: AppColors.white),
                         ),
                         action: (controller) async {
+
                           setState(() {
                             !active;
                           });
@@ -77,7 +78,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             } else if (snapshot.data!.isEmpty) {
                               return Center(
                                   child:
-                                      EmptyPlaceholder(text: 'No Trips yet'));
+                                      EmptyPlaceholder(text: 'No Active Trips'));
                             } else {
                               final trips = (snapshot.data as List<Booking>)
                                   .where(

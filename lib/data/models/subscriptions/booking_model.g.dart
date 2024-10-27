@@ -22,8 +22,8 @@ BookingModel _$BookingModelFromJson(Map<String, dynamic> json) => BookingModel(
       driver: json['driver'],
       startTime: json['startTime'],
       endTime: json['endTime'],
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
     );
 
 Map<String, dynamic> _$BookingModelToJson(BookingModel instance) =>
@@ -43,6 +43,6 @@ Map<String, dynamic> _$BookingModelToJson(BookingModel instance) =>
       'driver': instance.driver,
       'startTime': instance.startTime,
       'endTime': instance.endTime,
-      'createdAt': instance.createdAt.toIso8601String(),
-      'updatedAt': instance.updatedAt.toIso8601String(),
+      'createdAt': instance.createdAt,
+      'updatedAt': instance.updatedAt,
     };

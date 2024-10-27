@@ -4,11 +4,14 @@ import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:salama_users/app/utils/logger.dart';
 import 'package:salama_users/data/models/subscriptions/subscribe_model.dart';
+import 'package:salama_users/data/models/subscriptions/subscription_model.dart';
+import 'package:salama_users/data/models/subscriptions/user_subscription_model.dart';
 import 'package:salama_users/domain/entities/auth/location.dart';
 import 'package:salama_users/domain/entities/subscriptions/address.dart';
 import 'package:salama_users/domain/entities/subscriptions/booking.dart';
 import 'package:salama_users/domain/entities/subscriptions/report.dart';
 import 'package:salama_users/domain/entities/subscriptions/subscription.dart';
+import 'package:salama_users/domain/repositories/subscriptions/subscriptions_repository.dart';
 import 'package:salama_users/domain/usecases/subscriptions/accept_ride.dart';
 import 'package:salama_users/domain/usecases/subscriptions/create_subscription_usecase.dart';
 import 'package:salama_users/domain/usecases/subscriptions/fetch_active_booking_usecase.dart';
@@ -49,7 +52,9 @@ class SubscriptionsNotifier extends ChangeNotifier {
       required this.reportBookingUsecase,
       required this.fetchReportUsecase,
       required this.fetchAddressCoordinateUsecase,
-      required this.subscribeUsecase});
+      required this.subscribeUsecase,
+        required this.repository
+      });
   final GetCurrentPositionUsecase currentPositionUsecase;
   final CreateSubscriptionUsecase createSubscriptionUsecase;
   final FetchSubscriptionUsecase fetchSubscriptionUsecase;
@@ -65,6 +70,7 @@ class SubscriptionsNotifier extends ChangeNotifier {
   final FetchSinglebookingUsecase fetchSinglebookingUsecase;
   final FetchActivebookingUsecase fetchActivebookingUsecase;
   final SubscribeUsecase subscribeUsecase;
+  final SubscriptionsRepository repository;
 
   final currentPosition = GenericStore<Location?>(null);
   final subscriptions = GenericStore<List<Subscription>?>(null);
@@ -73,6 +79,7 @@ class SubscriptionsNotifier extends ChangeNotifier {
   final booking = GenericStore<Booking?>(null);
   final reports = GenericStore<List<Report>?>(null);
   final address = GenericStore<List<Address>?>(null);
+  final userActiveSubscriptions = GenericStore<UserSubscriptionModel?>(null);
 
   Future<void> getCurentPosition() async {
     final position = await currentPositionUsecase(NoParams());
@@ -125,8 +132,24 @@ class SubscriptionsNotifier extends ChangeNotifier {
     response.fold(
       (l) {},
       (r) {
+
         Logger().d("${r} user subscription");
         userSubscriptions.emit(r);
+      },
+    );
+  }
+
+  Future<void> fetchUserActiveSubscriptions() async {
+    logger.d('fetching active use subscription');
+    final response = await repository.fetchUserActiveSubscription();
+    response.fold(
+          (l) {
+
+          },
+          (r) {
+            userActiveSubscriptions.emit(r);
+            notifyListeners();
+           Logger().wtf("${r} user subscription");
       },
     );
   }
@@ -159,11 +182,14 @@ class SubscriptionsNotifier extends ChangeNotifier {
   Future<void> fetchActiveBooking({required String rideStatus}) async {
     final response = await fetchActivebookingUsecase(
         FetchActiveBookingUsecaseParams(rideStatus: rideStatus));
+
     response.fold(
       (l) {
+        logger.e(l);
         AppFlushbar.show(FailureToMessage.mapFailureToMessage(l));
       },
       (r) {
+        logger.e(r);
         booking.emit(r);
       },
     );

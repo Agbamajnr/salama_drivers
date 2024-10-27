@@ -6,8 +6,8 @@ class Subscription extends Equatable {
   final dynamic description;
   final dynamic amount;
   final dynamic tenor;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final dynamic createdAt;
+  final dynamic updatedAt;
   const Subscription(
       {required this.id,
       required this.title,

@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     context.subsription.fetchActiveBooking(rideStatus: 'DRIVER_ACCEPTED');
     context.subsription.getCurentPosition();
+    context.subsription.fetchUserActiveSubscriptions();
     super.initState();
   }
 

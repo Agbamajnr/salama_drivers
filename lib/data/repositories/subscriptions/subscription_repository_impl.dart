@@ -1,10 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:salama_users/app/utils/logger.dart';
 import 'package:salama_users/data/models/subscriptions/address_model.dart';
 import 'package:salama_users/data/models/subscriptions/booking_model.dart';
 import 'package:salama_users/data/models/subscriptions/report_model.dart';
 import 'package:salama_users/data/models/subscriptions/subscribe_model.dart';
 import 'package:salama_users/data/models/subscriptions/subscription_model.dart';
+import 'package:salama_users/data/models/subscriptions/user_subscription_model.dart';
 import '../../../core/exception/__export.dart';
 import '../../../core/local_storage/__export.dart';
 import '../../../domain/repositories/subscriptions/subscriptions_repository.dart';
@@ -122,6 +124,21 @@ class SubscriptionRepositoryImpl implements SubscriptionsRepository {
     try {
       final response =
           await remoteDatasource.fetchActiveBooking(rideStatus: rideStatus);
+      logger.w(response);
+      return Right(response);
+    } catch (e) {
+      return Left(
+        ExceptionHandler.networkError(e),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserSubscriptionModel>> fetchUserActiveSubscription() async {
+    try {
+      final response =
+      await remoteDatasource.fetchUserActiveSubscription();
+      logger.w(response);
       return Right(response);
     } catch (e) {
       return Left(

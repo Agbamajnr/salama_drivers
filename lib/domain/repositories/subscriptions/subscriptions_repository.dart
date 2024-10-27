@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:salama_users/data/models/subscriptions/subscribe_model.dart';
+import 'package:salama_users/data/models/subscriptions/user_subscription_model.dart';
 import 'package:salama_users/domain/entities/subscriptions/address.dart';
 import 'package:salama_users/domain/entities/subscriptions/booking.dart';
 import 'package:salama_users/domain/entities/subscriptions/report.dart';
@@ -14,6 +15,7 @@ abstract class SubscriptionsRepository {
     required int? page,
     required int? perPage,
   });
+  Future<Either<Failure, UserSubscriptionModel>> fetchUserActiveSubscription();
   Future<Either<Failure, List<Subscription>>> fetchUserSubscriptions({
     required int? page,
     required int? perPage,

@@ -6,6 +6,7 @@ import 'package:salama_users/data/models/subscriptions/booking_model.dart';
 import 'package:salama_users/data/models/subscriptions/report_model.dart';
 import 'package:salama_users/data/models/subscriptions/subscribe_model.dart';
 import 'package:salama_users/data/models/subscriptions/subscription_model.dart';
+import 'package:salama_users/data/models/subscriptions/user_subscription_model.dart';
 
 import '../../../core/exception/__export.dart';
 import '../../../core/local_storage/__export.dart';
@@ -28,6 +29,7 @@ abstract class SubscriptionsRemoteDatasource {
   });
   Future<BookingModel> fetchSingleBooking({required String bookingId});
   Future<BookingModel> fetchActiveBooking({required String rideStatus});
+  Future<UserSubscriptionModel> fetchUserActiveSubscription();
   Future<void> cancelBooking({
     required String bookingId,
   });
@@ -80,6 +82,20 @@ class SubscriptionRemoteDatasourceImpl
           'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
       _sessionToken =
           List.generate(len, (index) => chars[r.nextInt(chars.length)]).join();
+    }
+  }
+
+  @override
+  Future<UserSubscriptionModel> fetchUserActiveSubscription() async {
+    if (await networkInfo.isConnected) {
+      final response = await httpRequester.getRequest(
+        endpoint: '/taxi/subscriptions/user/subscribe',
+        token: (await secureStorage.getToken()),
+      );
+      return UserSubscriptionModel.fromJson(
+          response.data['data'] as Map<String, dynamic>);
+    } else {
+      throw NoInternetException();
     }
   }
 
@@ -149,6 +165,9 @@ class SubscriptionRemoteDatasourceImpl
       );
 
       Logger().d('${response.data} Subscription');
+      if(response.data['data'] == null){
+        return [];
+      }
       return List<SubscriptionModel>.from((response.data['data'] as List)
           .map((x) => SubscriptionModel.fromJson(x)));
     } else {

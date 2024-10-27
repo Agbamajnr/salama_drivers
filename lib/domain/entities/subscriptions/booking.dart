@@ -16,8 +16,8 @@ class Booking extends Equatable {
   final dynamic driver;
   final dynamic startTime;
   final dynamic endTime;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final dynamic createdAt;
+  final dynamic updatedAt;
   const Booking({
     required this.id,
     required this.riderId,
