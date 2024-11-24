@@ -1,11 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
+import 'package:salama_users/app/utils/logger.dart';
 import 'package:salama_users/core/exception/errors.dart';
 import 'package:salama_users/core/exception/failures.dart';
 
 
 class ExceptionHandler {
   static Failure networkError(dynamic e) {
+    logger.e(e.toString());
     Logger().d(e);
     if (e is NoInternetException) {
       return NoInternetFailure();
@@ -39,7 +41,7 @@ class ExceptionHandler {
         );
       }
     } else {
-    
+      logger.d(e.toString());
       return UnknownFailure();
     }
   }

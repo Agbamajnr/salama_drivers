@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "418326186728",
     "project_id": "salama-f2548",
-    "storage_bucket": "salama-f2548.appspot.com"
+    "storage_bucket": "salama-f2548.firebasestorage.app"
   },
   "client": [
     {
@@ -29,6 +29,44 @@
         "mobilesdk_app_id": "1:418326186728:android:99ce3bbecdbf243016d75d",
         "android_client_info": {
           "package_name": "com.example.salama_users"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbVGXFRFQlFMu8NKJ3hN0e4sjfkDCtlik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418326186728:android:ed2359f325ce7bb016d75d",
+        "android_client_info": {
+          "package_name": "com.salama.users_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbVGXFRFQlFMu8NKJ3hN0e4sjfkDCtlik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418326186728:android:44c122b7ad225a6f16d75d",
+        "android_client_info": {
+          "package_name": "com.salama_driver.app"
         }
       },
       "oauth_client": [],

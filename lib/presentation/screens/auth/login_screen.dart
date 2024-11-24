@@ -18,6 +18,8 @@ class _LoginScreenState extends State<LoginScreen> {
   // and allows validation of the form.
   final _formKey = GlobalKey<FormState>();
 
+  bool _hidePassword = true;
+
   // Controllers for the text fields
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -71,15 +73,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Password field
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                        onPressed:(){
+                          setState(() {
+                            _hidePassword = !_hidePassword;
+                          });
+                        },
+                        icon:  Icon(_hidePassword ? Icons.visibility_off : Icons.visibility,)
+                    )
                   ),
-                  obscureText: true,
+                  obscureText: _hidePassword,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
                     }
+
                     return null;
                   },
                 ),

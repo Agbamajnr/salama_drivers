@@ -46,6 +46,8 @@ class SubscriptionRepositoryImpl implements SubscriptionsRepository {
         perPage: perPage,
       );
 
+      logger.d(response);
+
       return Right(response);
     } catch (e) {
       return Left(
@@ -64,6 +66,7 @@ class SubscriptionRepositoryImpl implements SubscriptionsRepository {
         page: page,
         perPage: perPage,
       );
+      logger.d(response);
 
       return Right(response);
     } catch (e) {

@@ -32,6 +32,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       _middleNameController.text = user?.middleName ?? "";
       _lastNameController.text = user?.lastName ?? "";
     });
+    context.subsription.dashboard();
 
     super.initState();
   }
@@ -126,7 +127,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                             lastName: _lastNameController.text,
                             middleName: _middleNameController.text,
                             firebaseToken:
-                                context.auth.user.value?.firebaseToken ?? "",
+                                context.auth.user.value?.firebaseToken,
                             longitude: location?.lng ?? 0.0,
                             latitude: location?.lat ?? 0.0);
                       }),

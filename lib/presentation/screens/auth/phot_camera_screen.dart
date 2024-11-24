@@ -184,21 +184,24 @@ class _ProfilePhotoCameraScreenState extends State<ProfilePhotoCameraScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                BusyButton(
-                  title: "Submit Photo",
-                  onTap: () async {
-                    File file = File(_imageFile!.path);
-                    await uploadFile(file);
-                    setState(() {
-                      _isLoading = false;
-                    });
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: BusyButton(
+                    title: "Submit Photo",
+                    onTap: () async {
+                      File file = File(_imageFile!.path);
+                      await uploadFile(file);
+                      setState(() {
+                        _isLoading = false;
+                      });
 
-                    context.auth.register().then((success) {
-                      if (success) {
-                        context.nav.pushNamed(Routes.regsitrationConfirmScreen);
-                      }
-                    });
-                  },
+                      context.auth.register().then((success) {
+                        if (success) {
+                          context.nav.pushNamed(Routes.regsitrationConfirmScreen);
+                        }
+                      });
+                    },
+                  ),
                 ),
                 TextButton(
                   onPressed: () {
@@ -208,6 +211,7 @@ class _ProfilePhotoCameraScreenState extends State<ProfilePhotoCameraScreen> {
                   },
                   child: const Text('Retake photo'),
                 ),
+                Gap(15)
               ],
             ),
         ],

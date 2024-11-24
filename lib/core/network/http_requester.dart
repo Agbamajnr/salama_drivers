@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:injectable/injectable.dart';
+import 'package:salama_users/app/utils/logger.dart';
 
 import '../constants/keys.dart';
 
@@ -10,6 +11,8 @@ class HttpRequester {
     required this.dio,
   });
   final Dio dio;
+
+  final String baseUrl = "";
 
   Future<Response<dynamic>> post({
     required String endpoint,
@@ -23,7 +26,7 @@ class HttpRequester {
       dio.options.headers['Authorization'] = 'Bearer $token';
     }
     final response = await dio.post<dynamic>(
-      dotenv.env[EnvKeys.baseUrl]! + endpoint,
+      baseUrl + endpoint,
       data: body,
       queryParameters: queryParam,
       options: Options(
@@ -46,13 +49,14 @@ class HttpRequester {
       dio.options.headers['Authorization'] = 'Bearer $token';
     }
     final response = dio.get<dynamic>(
-      (baseUrl ?? dotenv.env[EnvKeys.baseUrl]!) + endpoint,
+      endpoint,
       queryParameters: queryParam,
       options: Options(
         contentType: contentType,
         headers: headers,
       ),
     );
+    logger.d(response);
     return response;
   }
 
@@ -68,7 +72,7 @@ class HttpRequester {
       dio.options.headers['Authorization'] = 'Bearer $token';
     }
     final response = dio.put<dynamic>(
-      dotenv.env[EnvKeys.baseUrl]! + endpoint,
+      baseUrl + endpoint,
       data: body,
       queryParameters: queryParam,
       options: Options(
@@ -91,7 +95,7 @@ class HttpRequester {
       dio.options.headers['Authorization'] = 'Bearer $token';
     }
     final response = await dio.patch<dynamic>(
-      dotenv.env[EnvKeys.baseUrl]! + endpoint,
+      baseUrl + endpoint,
       data: body,
       queryParameters: queryParam,
       options: Options(
@@ -114,7 +118,7 @@ class HttpRequester {
       dio.options.headers['Authorization'] = 'Bearer $token';
     }
     final response = await dio.delete<dynamic>(
-      dotenv.env[EnvKeys.baseUrl]! + endpoint,
+      baseUrl + endpoint,
       data: body,
       queryParameters: queryParam,
       options: Options(

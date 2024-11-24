@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:salama_users/core/extensions/ctx_extension.dart';
 import 'package:salama_users/core/styles/colors.dart';
+import 'package:salama_users/firebase_handler.dart';
 import 'package:salama_users/presentation/screens/home/earning_screen.dart';
 import 'package:salama_users/presentation/screens/home/history_list.screen.dart';
 import 'package:salama_users/presentation/screens/home/home_screen.dart';
@@ -15,9 +17,12 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   @override
   void initState() {
+    PushNotificationService().initialize(context);
     context.subsription.fetchActiveBooking(rideStatus: 'DRIVER_ACCEPTED');
     context.subsription.getCurentPosition();
     context.subsription.fetchUserActiveSubscriptions();
+    context.subsription.fetchBooking();
+    context.subsription.dashboard();
     super.initState();
   }
 

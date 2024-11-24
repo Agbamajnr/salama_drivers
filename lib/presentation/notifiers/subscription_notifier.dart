@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:salama_users/app/utils/logger.dart';
@@ -86,6 +88,7 @@ class SubscriptionsNotifier extends ChangeNotifier {
     if (position != null) {
       currentPosition
           .emit(Location(lat: position.latitude, lng: position.longitude));
+
     }
   }
 
@@ -167,13 +170,16 @@ class SubscriptionsNotifier extends ChangeNotifier {
   }
 
   Future<void> fetchSingleBooking({required String bookingId}) async {
+    // unawaited(PopupLoader().show(navKey.currentContext!));
     final response = await fetchSinglebookingUsecase(
         FetchSingleBookingUsecaseParams(bookingId: bookingId));
+    // nav.pop();
     response.fold(
       (l) {
         AppFlushbar.show(FailureToMessage.mapFailureToMessage(l));
       },
       (r) {
+        logger.wtf(r);
         booking.emit(r);
       },
     );
@@ -198,8 +204,10 @@ class SubscriptionsNotifier extends ChangeNotifier {
   Future<void> acceptRide({
     required String bookingId,
   }) async {
+    unawaited(PopupLoader().show(navKey.currentContext!));
     final response =
         await acceptRideUsecase(AcceptRideUsecaseParams(bookingId: bookingId));
+    nav.pop();
     response.fold(
       (l) {
         AppFlushbar.show(FailureToMessage.mapFailureToMessage(l));
@@ -211,9 +219,11 @@ class SubscriptionsNotifier extends ChangeNotifier {
   Future<void> cancelbooking({
     required String bookingId,
   }) async {
+    unawaited(PopupLoader().show(navKey.currentContext!));
     final response = await cancelBookingUsecase(
       CancelBookingUsecaseParams(bookingId: bookingId),
     );
+    nav.pop();
     response.fold(
       (l) {
         AppFlushbar.show(FailureToMessage.mapFailureToMessage(l));
@@ -227,9 +237,11 @@ class SubscriptionsNotifier extends ChangeNotifier {
   Future<void> startbooking({
     required String bookingId,
   }) async {
+    unawaited(PopupLoader().show(navKey.currentContext!));
     final response = await startBookingUsecase(
       StartBookingUsecaseParams(bookingId: bookingId),
     );
+    nav.pop();
     response.fold(
       (l) {
         AppFlushbar.show(FailureToMessage.mapFailureToMessage(l));
@@ -243,9 +255,11 @@ class SubscriptionsNotifier extends ChangeNotifier {
   Future<void> completebooking({
     required String bookingId,
   }) async {
+    unawaited(PopupLoader().show(navKey.currentContext!));
     final response = await completeBookingUsecase(
       CompleteBookingUsecaseParams(bookingId: bookingId),
     );
+    nav.pop();
     response.fold(
       (l) {
         AppFlushbar.show(FailureToMessage.mapFailureToMessage(l));
@@ -260,9 +274,11 @@ class SubscriptionsNotifier extends ChangeNotifier {
     required String bookingId,
     required String message,
   }) async {
+    unawaited(PopupLoader().show(navKey.currentContext!));
     final response = await reportBookingUsecase(
       ReportBookingUsecaseParams(bookingId: bookingId, message: message),
     );
+    nav.pop();
     response.fold(
       (l) {
         AppFlushbar.show(FailureToMessage.mapFailureToMessage(l));
@@ -325,4 +341,40 @@ class SubscriptionsNotifier extends ChangeNotifier {
       },
     );
   }
+
+  void dashboard() async{
+    try{
+      final prefs = FlutterSecureStorage();
+      final firebaseToken = await prefs.read(key: "firebaseToken");
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await FlutterSecureStorage().read(key: "token")}'
+      };
+      final response = await Dio().put(
+          'https://api.salamadrive.com/taxi/users/dashboard',
+          options: Options(
+            method: 'PUT',
+            headers: headers,
+          ),
+          data:  {
+            "longitude": 211121,
+            "latitude": 333,
+            "isActive": true,
+            "firebaseToken": firebaseToken
+          }
+
+      );
+
+      logger.d(response.data.toString());
+
+      logger.d(response.data.toString());
+
+    }on DioException catch(e){
+      logger
+      .e(e.toString());
+    } catch(e){
+      logger.d(e.toString());
+    }
+
+}
 }

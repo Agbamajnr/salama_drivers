@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
+import 'package:salama_users/app/utils/logger.dart';
 import '../../../core/exception/__export.dart';
 import '../../../core/local_storage/__export.dart';
 import '../../../core/network/__export.dart';
@@ -10,9 +11,9 @@ abstract class AuthRemoteDatasource {
       {required String email,
       required String password,
       required String device});
-  Future<PersonModel> register({required Map<String, dynamic> data});
+  Future<bool> register({required Map<String, dynamic> data});
   Future<void> verifyEmail({required String otp, required String email});
-  Future<String> updateUserDetails(
+  Future<PersonModel> updateUserDetails(
       {required String firstName,
       required String lastName,
       required String middleName,
@@ -57,7 +58,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         "device": device
       };
       final response = await httpRequester.post(
-        endpoint: '/taxi/auth/login',
+        endpoint: 'https://api.salamadrive.com/taxi/auth/login',
         body: body,
       );
       final data = response.data['data'] as Map<String, dynamic>;
@@ -72,26 +73,28 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   }
 
   @override
-  Future<PersonModel> register({required Map<String, dynamic> data}) async {
+  Future<bool> register({required Map<String, dynamic> data}) async {
     if (await networkInfo.isConnected) {
       final response = await httpRequester.post(
-        endpoint: '/taxi/auth/register-driver',
+        endpoint: 'https://api.salamadrive.com/taxi/auth/register-driver',
         body: data,
       );
-      Logger().d(response.data);
-      final datas = response.data['data'] as Map<String, dynamic>;
-      await secureStorage.saveToken(datas['token']);
-
-      final user = PersonModel.fromJson(datas['user'] as Map<String, dynamic>);
-      await secureStorage.saveUser(user);
-      return user;
+      Logger().d( 'from registration response');
+      Logger().wtf(response.data);
+      Logger().d( 'from registration response');
+      // final datas = response.data['data'] as Map<String, dynamic>;
+      // await secureStorage.saveToken(datas['token']);
+      //
+      // final user = PersonModel.fromJson(datas['user'] as Map<String, dynamic>);
+      // await secureStorage.saveUser(user);
+      return true;
     } else {
       throw NoInternetException();
     }
   }
 
   @override
-  Future<String> updateUserDetails(
+  Future<PersonModel> updateUserDetails(
       {required String firstName,
       required String lastName,
       required String middleName,
@@ -109,18 +112,15 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         "longitude": longitude,
         "latitude": latitude
       };
-      await httpRequester.put(
-        endpoint: '/taxi/users',
+      final response = await httpRequester.put(
+        endpoint: 'https://api.salamadrive.com/taxi/users',
         body: body,
         token: (await secureStorage.getToken()),
       );
-      final userMap = user!.toJson();
-      userMap['firstName'] = firstName;
-      userMap['lastName'] = lastName;
-      userMap['middleName'] = middleName;
-      userMap['firebaseToken'] = firebaseToken;
-      await secureStorage.saveUser(PersonModel.fromJson(userMap));
-      return 'Account updated successfully';
+      logger.d(response.data);
+      final user = PersonModel.fromJson(response.data['data'] as Map<String, dynamic>);
+      await secureStorage.saveUser(user);
+      return user;
     } else {
       throw NoInternetException();
     }
@@ -130,7 +130,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   Future<void> deleteUser() async {
     if (await networkInfo.isConnected) {
       await httpRequester.delete(
-        endpoint: '/taxi/users/delete',
+        endpoint: 'https://api.salamadrive.com/taxi/users/delete',
         token: (await secureStorage.getToken()),
       );
     } else {
@@ -153,7 +153,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       };
 
       final response = await httpRequester.patch(
-        endpoint: '/taxi/users/dashboard',
+        endpoint: 'https://api.salamadrive.com/taxi/users/dashboard',
         body: body,
         token: (await secureStorage.getToken()),
       );
@@ -169,7 +169,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     if (await networkInfo.isConnected) {
       final body = {'email': email, "intent": "sign_otp", "userType": "driver"};
       final response = await httpRequester.post(
-        endpoint: '/taxi/auth/otp',
+        endpoint: 'https://api.salamadrive.com/taxi/auth/otp',
         body: body,
       );
       return (response.data as Map<String, dynamic>)['message'];
@@ -188,7 +188,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         "otp": otp
       };
       await httpRequester.post(
-        endpoint: '/taxi/auth/verify-account',
+        endpoint: 'https://api.salamadrive.com/taxi/auth/verify-account',
         body: body,
       );
     } else {
@@ -214,7 +214,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       };
 
       final response = await httpRequester.patch(
-        endpoint: '/taxi/auth/reset-password',
+        endpoint: 'https://api.salamadrive.com/taxi/auth/reset-password',
         body: body,
         token: (await secureStorage.getToken()),
       );

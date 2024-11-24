@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:salama_users/app/utils/logger.dart';
 import 'package:salama_users/core/extensions/ctx_extension.dart';
 import 'package:salama_users/core/extensions/date_extension.dart';
 import 'package:salama_users/core/routes/router_names.dart';
@@ -18,6 +19,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
   @override
   void initState() {
     context.subsription.fetchBooking();
+    // context.subsription.dashboard();
     super.initState();
   }
 
@@ -45,11 +47,13 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
             } else if (snapshot.data!.isEmpty) {
               return Center(child: EmptyPlaceholder(text: 'No Trips yet'));
             } else {
+
               final trips = (snapshot.data as List<Booking>)
                   .where((e) => e.rideStatus?.isNotEmpty == true)
                   .toList();
+              logger.d(trips[1].updatedAt);
               return Column(
-                children: List.generate(trips.length, (index) {
+                children: List?.generate(trips.length, (index) {
                   final item = trips[index];
                   return Padding(
                     padding:
@@ -77,7 +81,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                         ),
                       ),
                       subtitle: Text(
-                        '${item.updatedAt.formatToCustomString()}',
+                        '${item?.updatedAt}',
                         style: TextStyle(fontSize: 14),
                       ),
                       trailing: Text(

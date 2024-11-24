@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+import 'package:salama_users/app/utils/logger.dart';
+import 'package:salama_users/core/routes/router_names.dart';
 import '../../core/alerts/__export.dart';
 import '../../core/exception/__export.dart';
 import '../../core/local_storage/__export.dart';
@@ -102,6 +104,7 @@ class AuthNotifier extends ChangeNotifier {
         return false;
       },
       (r) {
+        nav.pushNamedAndRemoveUntil(Routes.login, (Route<dynamic> route) => false);
         return true;
       },
     );
@@ -136,8 +139,10 @@ class AuthNotifier extends ChangeNotifier {
         return false;
       },
       (r) {
+        logger.i(r);
+        user.emit(r);
         checkSavedUser();
-        AppFlushbar.show(r, isError: false);
+        AppFlushbar.show("Account Updated!", isError: false);
         return true;
       },
     );

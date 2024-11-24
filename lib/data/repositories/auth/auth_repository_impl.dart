@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
+import 'package:salama_users/app/utils/logger.dart';
 import '../../../core/exception/__export.dart';
 import '../../../core/local_storage/__export.dart';
 import '../../../core/location/__export.dart';
@@ -42,10 +43,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, PersonModel>> register(
+  Future<Either<Failure, bool>> register(
       {required Map<String, dynamic> data}) async {
     try {
       final response = await remoteDatasource.register(data: data);
+      logger.i(response);
       return Right(response);
     } catch (e) {
       return Left(
@@ -69,7 +71,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, String>> updateUserDetails(
+  Future<Either<Failure, PersonModel>> updateUserDetails(
       {required String firstName,
       required String lastName,
       required String middleName,

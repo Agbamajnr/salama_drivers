@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:salama_users/core/extensions/__export.dart';
+import 'package:salama_users/core/formatter/functions.dart';
 import 'package:salama_users/core/styles/colors.dart';
 import 'package:salama_users/presentation/widgets/busy_button.dart';
 
@@ -76,7 +77,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                     ),
                     const Gap(5),
                     Text(
-                      '${booking.updatedAt.formatToCustomString()}',
+                      '${booking.updatedAt}',
                       style: TextStyle(fontSize: 14),
                     ),
                     const Gap(20),
@@ -146,26 +147,145 @@ class _BookingDetailsState extends State<BookingDetails> {
                     ),
                     containerRow('From', booking.riderFromAddress),
                     containerRow('To', booking.riderToAddress),
-                    containerRow('Ride Start', booking.startTime.toString()),
-                    containerRow('Ride', booking.endTime.toString()),
+                    booking.startTime == null ? Container() : containerRow('Ride Start', booking.startTime ?? ""),
+                    booking.endTime == null ? Container() : containerRow('Ride', booking.endTime ?? ""),
                     containerRow(
-                      'Created At',
-                      '${booking.updatedAt.formatToCustomString()}',
+                      'Booking Time',
+                      '${Functions.getFormattedDate(DateTime.parse(booking.createdAt))}',
                     ),
-                    containerRow(
-                      'Updated At',
-                      '${booking.updatedAt.formatToCustomString()}',
-                    ),
+                    // containerRow(
+                    //   'Updated At',
+                    //   '${booking.updatedAt}',
+                    // ),
                   ],
                 ),
               );
             }
           }),
-      bottomNavigationBar: Container(
-        color: AppColors.white,
-        padding: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
-        child: BusyButton(title: 'Report Trip', onTap: () {}),
-      ),
+        bottomNavigationBar: widget.params.booking.rideStatus == "BOOKING"
+            ? Container(
+          color: AppColors.white,
+          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BusyButton(
+                    title: 'Accept Trip',
+                    onTap: () {
+                      context.subsription
+                          .acceptRide(bookingId: widget.params.booking.id)
+                          .then((_) {});
+                    }),
+                const Gap(6),
+                BusyButton(
+                    color: AppColors.primaryGrey.withOpacity(0.5),
+                    textColor: AppColors.dark,
+                    title: 'Decline',
+                    onTap: () {
+                      context.subsription
+                          .cancelbooking(
+                          bookingId: widget.params.booking.id)
+                          .then((_) {});
+                    }),
+              ],
+            ),
+          ),
+        )
+            : widget.params.booking.rideStatus == "BOOKING"
+            ? Container(
+          color: AppColors.white,
+          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BusyButton(
+                    title: 'Accept Trip',
+                    onTap: () {
+                      context.subsription
+                          .acceptRide(
+                          bookingId: widget.params.booking.id)
+                          .then((_) {});
+                    }),
+                const Gap(6),
+                BusyButton(
+                    color: AppColors.primaryGrey.withOpacity(0.5),
+                    textColor: AppColors.dark,
+                    title: 'Decline',
+                    onTap: () {
+                      context.subsription
+                          .cancelbooking(
+                          bookingId: widget.params.booking.id)
+                          .then((_) {});
+                    }),
+              ],
+            ),
+          ),
+        )
+            : widget.params.booking.rideStatus == "DRIVER_ACCEPTED"
+            ? Container(
+          color: AppColors.white,
+          padding:
+          EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+          child: SafeArea(
+            child: BusyButton(
+                title: 'Start Trip',
+                onTap: () {
+                  context.subsription
+                      .startbooking(
+                      bookingId: widget.params.booking.id)
+                      .then((_) {});
+                }),
+          ),
+        )
+            : widget.params.booking.rideStatus == "COMPLETED"
+            ? Container(
+          color: AppColors.white,
+          padding: EdgeInsets.symmetric(
+              vertical: 24, horizontal: 20),
+          child: SafeArea(
+            child: BusyButton(
+                color: Colors.red,
+                title: 'Report Trip',
+                onTap: () {
+                  context.subsription
+                      .reportbooking(
+                      bookingId: widget.params.booking.id,
+                      message: 'I am reporing this trip')
+                      .then((_) {});
+                }),
+          ),
+        ) :
+        widget.params.booking.rideStatus == "DRIVING"
+            ? Container(
+          color: AppColors.white,
+          padding: EdgeInsets.symmetric(
+              vertical: 24, horizontal: 20),
+          child: SafeArea(
+            child: BusyButton(
+                color: Colors.red,
+                title: 'End Trip',
+                onTap: () {
+                  context.subsription
+                      .completebooking(
+                      bookingId: widget.params.booking.id)
+                      .then((_) {});
+                }),
+          ),
+        )
+            : null
+      // bottomNavigationBar: Container(
+      //   color: AppColors.white,
+      //   padding: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+      //   child: BusyButton(title: 'Report Trip', onTap: () {
+      //     context.subsription
+      //         .reportbooking(
+      //         bookingId: widget.params.booking.id,
+      //         message: 'I am reporing this trip')
+      //         .then((_) {});
+      //   }),
+      // ),
     );
   }
 

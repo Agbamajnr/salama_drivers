@@ -11,12 +11,12 @@ abstract class AuthRepository {
       required String device});
 
   Future<Person?> getSavedUser();
-  Future<Either<Failure, Person>> register(
+  Future<Either<Failure, bool>> register(
       {required Map<String, dynamic> data});
   Future<void> logout();
   Future<Position?> getCurrentPosition();
 
-  Future<Either<Failure, String>> updateUserDetails(
+  Future<Either<Failure, Person>> updateUserDetails(
       {required String firstName,
       required String lastName,
       required String middleName,

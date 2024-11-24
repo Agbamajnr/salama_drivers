@@ -2,13 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:salama_users/app/utils/logger.dart';
 import 'package:salama_users/core/extensions/__export.dart';
+import 'package:salama_users/core/formatter/functions.dart';
 import 'package:salama_users/core/styles/colors.dart';
 import 'package:salama_users/presentation/widgets/busy_button.dart';
 
 import '../../../core/formatter/formatter.dart';
 import '../../../domain/entities/subscriptions/booking.dart';
 import '../../widgets/network_image.dart';
+import 'package:easy_url_launcher/easy_url_launcher.dart';
 
 class ABookingDetails extends StatefulWidget {
   final ABookingDetailScreenParams params;
@@ -43,6 +46,8 @@ class _ABookingDetailsState extends State<ABookingDetails> {
   @override
   Widget build(BuildContext context) {
     final item = context.subsription.booking.value;
+    logger.d(item?.user['name']);
+    logger.w(widget.params.booking.rideStatus);
     return Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBar(
@@ -62,6 +67,7 @@ class _ABookingDetailsState extends State<ABookingDetails> {
               if (snapshot.data == null) {
                 return Center(child: CircularProgressIndicator());
               } else {
+
                 final booking = widget.params.booking;
                 return SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: 20),
@@ -78,7 +84,7 @@ class _ABookingDetailsState extends State<ABookingDetails> {
                       ),
                       const Gap(5),
                       Text(
-                        '${booking.updatedAt.formatToCustomString()}',
+                        '${Functions.getFormattedDate(DateTime.parse(booking.createdAt))}',
                         style: TextStyle(fontSize: 14),
                       ),
                       const Gap(20),
@@ -122,7 +128,7 @@ class _ABookingDetailsState extends State<ABookingDetails> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '0gar Emmanuel',
+                                "${item?.user['name']}",
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w700),
                               ),
@@ -135,6 +141,17 @@ class _ABookingDetailsState extends State<ABookingDetails> {
                                     color: AppColors.grey),
                               ),
                             ],
+                          ),
+                          Spacer(),
+                          InkWell(
+                            onTap: () async{
+                              await EasyLauncher.call(number: "${item?.user['phone']}");
+                            },
+
+                            child: Icon(
+                              Icons.call,
+                              color: Colors.green,
+                            ),
                           )
                         ],
                       ),
@@ -148,16 +165,9 @@ class _ABookingDetailsState extends State<ABookingDetails> {
                       ),
                       containerRow('From', booking.riderFromAddress),
                       containerRow('To', booking.riderToAddress),
-                      containerRow('Ride Start', booking.startTime.toString()),
-                      containerRow('Ride', booking.endTime.toString()),
-                      containerRow(
-                        'Created At',
-                        '${booking.updatedAt.formatToCustomString()}',
-                      ),
-                      containerRow(
-                        'Updated At',
-                        '${booking.updatedAt.formatToCustomString()}',
-                      ),
+                     booking.startTime == null ? Container() : containerRow('Ride Start', booking.startTime.toString()),
+                      booking.endTime == null ? Container() : containerRow('Ride', booking.endTime.toString()),
+
                     ],
                   ),
                 );
@@ -234,7 +244,7 @@ class _ABookingDetailsState extends State<ABookingDetails> {
                               title: 'Start Trip',
                               onTap: () {
                                 context.subsription
-                                    .acceptRide(
+                                    .startbooking(
                                         bookingId: widget.params.booking.id)
                                     .then((_) {});
                               }),
@@ -257,7 +267,25 @@ class _ABookingDetailsState extends State<ABookingDetails> {
                                         .then((_) {});
                                   }),
                             ),
-                          )
+                          ) :
+        widget.params.booking.rideStatus == "DRIVING"
+            ? Container(
+          color: AppColors.white,
+          padding: EdgeInsets.symmetric(
+              vertical: 24, horizontal: 20),
+          child: SafeArea(
+            child: BusyButton(
+                color: Colors.red,
+                title: 'End Trip',
+                onTap: () {
+                  context.subsription
+                      .reportbooking(
+                      bookingId: widget.params.booking.id,
+                      message: 'I am reporing this trip')
+                      .then((_) {});
+                }),
+          ),
+        )
                         : null);
   }
 

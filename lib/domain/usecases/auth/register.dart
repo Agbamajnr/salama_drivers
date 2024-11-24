@@ -15,7 +15,7 @@ class RegisterUsecase extends Usecase<Person, Map<String, dynamic>> {
   final AuthRepository authRepository;
 
   @override
-  Future<Either<Failure, Person>> call(
+  Future<Either<Failure, bool>> call(
     Map<String, dynamic> params,
   ) =>
       authRepository.register(data: params);

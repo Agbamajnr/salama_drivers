@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
+import 'package:salama_users/app/utils/logger.dart';
 import 'package:salama_users/data/models/subscriptions/address_model.dart';
 import 'package:salama_users/data/models/subscriptions/booking_model.dart';
 import 'package:salama_users/data/models/subscriptions/report_model.dart';
@@ -89,7 +90,7 @@ class SubscriptionRemoteDatasourceImpl
   Future<UserSubscriptionModel> fetchUserActiveSubscription() async {
     if (await networkInfo.isConnected) {
       final response = await httpRequester.getRequest(
-        endpoint: '/taxi/subscriptions/user/subscribe',
+        endpoint: 'https://api.salamadrive.com/taxi/subscriptions/user/subscribe',
         token: (await secureStorage.getToken()),
       );
       return UserSubscriptionModel.fromJson(
@@ -103,7 +104,7 @@ class SubscriptionRemoteDatasourceImpl
   Future<void> createSubscription({required Map<String, dynamic> data}) async {
     if (await networkInfo.isConnected) {
       final response = await httpRequester.post(
-        endpoint: '/taxi/subscriptions',
+        endpoint: 'https://api.salamadrive.com/taxi/subscriptions',
         body: data,
       );
 
@@ -130,12 +131,13 @@ class SubscriptionRemoteDatasourceImpl
       }
 
       final response = await httpRequester.getRequest(
-        endpoint: '/taxi/subscriptions',
+        endpoint: 'https://api.salamadrive.com/taxi/subscriptions',
         token: (await secureStorage.getToken()),
       );
 
       Logger().d('${response.data} Subscription');
       print("Returned");
+      Logger().e(response.data);
       return List<SubscriptionModel>.from((response.data['data'] as List)
           .map((x) => SubscriptionModel.fromJson(x)));
     } else {
@@ -160,7 +162,7 @@ class SubscriptionRemoteDatasourceImpl
       }
 
       final response = await httpRequester.getRequest(
-        endpoint: '/taxi/subscriptions/user',
+        endpoint: 'https://api.salamadrive.com/taxi/subscriptions/user',
         token: (await secureStorage.getToken()),
       );
 
@@ -192,7 +194,7 @@ class SubscriptionRemoteDatasourceImpl
       }
 
       final response = await httpRequester.getRequest(
-        endpoint: '/taxi/booking',
+        endpoint: 'https://api.salamadrive.com/taxi/booking',
         token: (await secureStorage.getToken()),
       );
 
@@ -211,9 +213,10 @@ class SubscriptionRemoteDatasourceImpl
   Future<BookingModel> fetchSingleBooking({required String bookingId}) async {
     if (await networkInfo.isConnected) {
       final response = await httpRequester.getRequest(
-        endpoint: '/taxi/booking/$bookingId',
+        endpoint: 'https://api.salamadrive.com/taxi/booking/$bookingId',
         token: (await secureStorage.getToken()),
       );
+      logger.i(response.data);
       return BookingModel.fromJson(
           response.data['data'] as Map<String, dynamic>);
     } else {
@@ -225,7 +228,7 @@ class SubscriptionRemoteDatasourceImpl
   Future<BookingModel> fetchActiveBooking({required String rideStatus}) async {
     if (await networkInfo.isConnected) {
       final response = await httpRequester.getRequest(
-        endpoint: '/taxi/booking/active/trip?bookingState=$rideStatus',
+        endpoint: 'https://api.salamadrive.com/taxi/booking/active/trip?bookingState=$rideStatus',
         token: (await secureStorage.getToken()),
       );
       return BookingModel.fromJson(
@@ -242,7 +245,7 @@ class SubscriptionRemoteDatasourceImpl
         "tripId": bookingId,
       };
       final response = await httpRequester.put(
-        endpoint: '/taxi/booking/drivers/accept',
+        endpoint: 'https://api.salamadrive.com/taxi/booking/drivers/accept',
         body: body,
       );
 
@@ -261,7 +264,7 @@ class SubscriptionRemoteDatasourceImpl
         "tripId": bookingId,
       };
       await httpRequester.put(
-        endpoint: '/taxi/booking/drivers/decline',
+        endpoint: 'https://api.salamadrive.com/taxi/booking/drivers/decline',
         token: (await secureStorage.getToken()),
         body: body,
       );
@@ -279,7 +282,7 @@ class SubscriptionRemoteDatasourceImpl
         "tripId": bookingId,
       };
       await httpRequester.put(
-        endpoint: '/taxi/booking/drivers/start',
+        endpoint: 'https://api.salamadrive.com/taxi/booking/drivers/start',
         token: (await secureStorage.getToken()),
         body: body,
       );
@@ -297,7 +300,7 @@ class SubscriptionRemoteDatasourceImpl
         "tripId": bookingId,
       };
       await httpRequester.put(
-        endpoint: '/taxi/booking/drivers/complete',
+        endpoint: 'https://api.salamadrive.com/taxi/booking/drivers/complete',
         token: (await secureStorage.getToken()),
         body: body,
       );
@@ -312,7 +315,7 @@ class SubscriptionRemoteDatasourceImpl
     if (await networkInfo.isConnected) {
       final body = {"tripId": bookingId, "message": message};
       await httpRequester.post(
-        endpoint: '/taxi/booking/trip/report',
+        endpoint: 'https://api.salamadrive.com/taxi/booking/trip/report',
         token: (await secureStorage.getToken()),
         body: body,
       );
@@ -327,7 +330,7 @@ class SubscriptionRemoteDatasourceImpl
     if (await networkInfo.isConnected) {
       final body = {"tripId": bookingId, "status": status};
       await httpRequester.put(
-        endpoint: '/taxi/booking/trip/report',
+        endpoint: 'https://api.salamadrive.com/taxi/booking/trip/report',
         token: (await secureStorage.getToken()),
         body: body,
       );
@@ -353,7 +356,7 @@ class SubscriptionRemoteDatasourceImpl
       }
 
       final response = await httpRequester.getRequest(
-        endpoint: '/taxi/booking/trip/report',
+        endpoint: 'https://api.salamadrive.com/taxi/booking/trip/report',
         token: (await secureStorage.getToken()),
       );
 
@@ -374,7 +377,7 @@ class SubscriptionRemoteDatasourceImpl
     if (await networkInfo.isConnected) {
       final response = await httpRequester.getRequest(
         endpoint:
-            '/taxi/location/address?longitude=${longitude}&latitude=${latitude}&radius=${radius}',
+            'https://api.salamadrive.com/taxi/location/address?longitude=${longitude}&latitude=${latitude}&radius=${radius}',
         token: (await secureStorage.getToken()),
       );
 
@@ -395,7 +398,7 @@ class SubscriptionRemoteDatasourceImpl
         "planId": planId,
       };
       final response = await httpRequester.post(
-        endpoint: '/taxi/subscriptions/user/subscribe',
+        endpoint: 'https://api.salamadrive.com/taxi/subscriptions/user/subscribe',
         token: (await secureStorage.getToken()),
         body: body,
       );

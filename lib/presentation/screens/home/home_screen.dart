@@ -82,8 +82,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             } else {
                               final trips = (snapshot.data as List<Booking>)
                                   .where(
-                                      (e) => e.rideStatus?.isNotEmpty == true)
+                                    (e) => e.rideStatus?.isNotEmpty == true &&
+                                    ["BOOKING", "DRIVING", "DRIVER_ACCEPTED"].contains(e.rideStatus),
+                              )
                                   .toList();
+
+                              if(trips.isEmpty) {
+                                return Center(
+                                    child:
+                                    EmptyPlaceholder(text: 'No Active Trips'));
+                              }
 
                               return SizedBox(
                                 height:
@@ -149,17 +157,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                       vertical: 12,
                                                       horizontal: 14),
                                                   decoration: BoxDecoration(
-                                                      color: AppColors
+                                                      color: item.rideStatus == "BOOKING" ? Colors.green : AppColors
                                                           .primaryGrey
                                                           .withOpacity(0.5),
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               30)),
                                                   child: Text(
-                                                    'Accept',
+                                                    item.rideStatus == "BOOKING" ? 'Accept' : 'View',
                                                     style: TextStyle(
                                                         color: AppColors.dark,
-                                                        height: 1),
+                                                        height: 1
+                                                    ),
                                                   ),
                                                 ),
                                               )),

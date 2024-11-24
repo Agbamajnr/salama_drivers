@@ -1,5 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:salama_users/data/models/auth/person_model.dart';
+import 'package:salama_users/domain/entities/auth/person.dart';
 
 import '../../../core/exception/__export.dart';
 import '../../../core/usecase/usecase.dart';
@@ -15,7 +17,7 @@ class UpdateUserDetailUsecase
   final AuthRepository repository;
 
   @override
-  Future<Either<Failure, String>> call(
+  Future<Either<Failure, Person>> call(
     UpdateUserDetailUsecaseParams params,
   ) =>
       repository.updateUserDetails(
