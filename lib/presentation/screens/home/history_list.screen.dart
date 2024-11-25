@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:salama_users/app/utils/logger.dart';
 import 'package:salama_users/core/extensions/ctx_extension.dart';
 import 'package:salama_users/core/extensions/date_extension.dart';
+import 'package:salama_users/core/formatter/functions.dart';
 import 'package:salama_users/core/routes/router_names.dart';
 import 'package:salama_users/core/styles/colors.dart';
 import 'package:salama_users/domain/entities/subscriptions/booking.dart';
@@ -38,8 +39,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
         centerTitle: false,
         elevation: 0,
       ),
-      body:
-       StreamBuilder<List<Booking>?>(
+      body: StreamBuilder<List<Booking>?>(
           stream: context.subsription.userBookings.stream,
           builder: (context, snapshot) {
             if (snapshot.data == null) {
@@ -47,7 +47,6 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
             } else if (snapshot.data!.isEmpty) {
               return Center(child: EmptyPlaceholder(text: 'No Trips yet'));
             } else {
-
               final trips = (snapshot.data as List<Booking>)
                   .where((e) => e.rideStatus?.isNotEmpty == true)
                   .toList();
@@ -60,10 +59,9 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     child: ListTile(
                       onTap: () {
-                        context.nav.pushNamed(Routes.bookingDetails,
-                         arguments:BookingDetailScreenParams(
-                                booking: item
-                              ),
+                        context.nav.pushNamed(
+                          Routes.bookingDetails,
+                          arguments: BookingDetailScreenParams(booking: item),
                         );
                       },
                       leading: CircleAvatar(
@@ -81,7 +79,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                         ),
                       ),
                       subtitle: Text(
-                        '${item?.updatedAt}',
+                        '${Functions.getFormattedDate(DateTime.parse(item.createdAt))}',
                         style: TextStyle(fontSize: 14),
                       ),
                       trailing: Text(

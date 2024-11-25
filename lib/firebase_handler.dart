@@ -23,6 +23,7 @@ import 'package:audioplayers/audioplayers.dart';
 class FirebaseHandler {
   Future<void> init() async {
     await Firebase.initializeApp(
+      name: "salama_drivers",
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
@@ -31,17 +32,12 @@ class FirebaseHandler {
       logger.wtf(value);
       final prefs = FlutterSecureStorage();
       prefs.write(key: "firebaseToken", value: value);
-    }
-
-    ).catchError((e) => logger.e(e));
+    }).catchError((e) => logger.e(e));
     // debugPrint("FCMToken $fcmToken");
     logger.wtf(fcmToken);
     // await getIt<DBService>().saveFirebaseToken(fcmToken.toString());
   }
-
-
 }
-
 
 class PushNotificationService {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
@@ -54,26 +50,31 @@ class PushNotificationService {
       badge: true,
       sound: true,
     );
-    FirebaseMessaging.onMessage.listen((RemoteMessage? message) async{
+    FirebaseMessaging.onMessage.listen((RemoteMessage? message) async {
       if (message?.notification != null) {
         final Map<String, dynamic> data;
         data = message!.data;
         logger.wtf(data);
 
         // Convert data to PushNotificationModel
-        final PushNotificationModel pushNotificationModel = PushNotificationModel
-            .fromJson(data);
-        if(pushNotificationModel.tripId == null)return;
+        final PushNotificationModel pushNotificationModel =
+            PushNotificationModel.fromJson(data);
+        if (pushNotificationModel.tripId == null) return;
         context.subsription.fetchBooking();
 
         //TODO: REMOVE DUMMY TRIP ID
-        pushNotificationModel.tripId = "503c17bf-1812-4191-aa3c-88bdaaf909e9";
-        context.subsription
-            .fetchSingleBooking(bookingId: pushNotificationModel.tripId.toString());
+        // pushNotificationModel.tripId = "503c17bf-1812-4191-aa3c-88bdaaf909e9";
+        context.subsription.fetchSingleBooking(
+            bookingId: pushNotificationModel.tripId.toString());
         final item = context.subsription.booking.value;
-        showNotificationModal(context, pushNotificationModel.title ?? "Alert", false, item, pushNotificationModel.body, pushNotificationModel.tripId);
+        showNotificationModal(
+            context,
+            pushNotificationModel.title ?? "Alert",
+            false,
+            item,
+            pushNotificationModel.body,
+            pushNotificationModel.tripId);
         await playSoundAndVibrate();
-
 
         // Log or use the PushNotificationModel instance
         logger.wtf(pushNotificationModel);
@@ -114,7 +115,6 @@ class PushNotificationService {
       print("Notification tapped: ${message.notification?.title}");
     }
 
-
     Future<String?> getToken() async {
       String? token = await _fcm.getToken();
       final prefs = FlutterSecureStorage();
@@ -122,12 +122,12 @@ class PushNotificationService {
       return token;
     }
 
-    Future<void> backgroundHandler(RemoteMessage message) async {
-
-    }
-
+    Future<void> backgroundHandler(RemoteMessage message) async {}
   }
-  void showNotificationModal(BuildContext context, String title, bool _isProcessing, [Booking? booking, String? body, String? tripId]) {
+
+  void showNotificationModal(
+      BuildContext context, String title, bool _isProcessing,
+      [Booking? booking, String? body, String? tripId]) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -147,24 +147,22 @@ class PushNotificationService {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                          color: Theme
-                              .of(context)
-                              .colorScheme
-                              .background,
-                          borderRadius: BorderRadius.circular(8)
-                      ),
-                      padding:
-                      const EdgeInsets.symmetric(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
                           vertical: 40.0, horizontal: 30),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Column(
                             children: [
-                              Icon(Icons.directions_car,
-                                color: Colors.red, size: 40,),
+                              Icon(
+                                Icons.directions_car,
+                                color: Colors.red,
+                                size: 40,
+                              ),
                               Gap(10),
-                             Text(
+                              Text(
                                 title,
                                 style: TextStyle(
                                   // fontFamily: AppFonts.mulishRegular,
@@ -175,7 +173,9 @@ class PushNotificationService {
                               ),
                               Gap(18),
                               Text(
-                                booking != null ? 'A user: ${booking.user['name']} has booked you for a trip to ${booking.riderToAddress}' : "",
+                                booking != null
+                                    ? 'A user: ${booking.user['name']} has booked you for a trip to ${booking.riderToAddress}'
+                                    : "",
                                 textAlign: TextAlign.center,
                                 softWrap: true,
                                 style: TextStyle(
@@ -189,7 +189,6 @@ class PushNotificationService {
                               const Gap(16),
                             ],
                           ),
-
                           const Gap(24),
                           Column(
                             children: [
@@ -211,7 +210,7 @@ class PushNotificationService {
                                       child: Text(
                                         "Dismiss",
                                         style: TextStyle(
-                                          // fontFamily: AppFonts.mulishRegular,
+                                            // fontFamily: AppFonts.mulishRegular,
                                             fontSize: 12,
                                             fontWeight: FontWeight.w800,
                                             color: AppColors.white),
@@ -225,18 +224,17 @@ class PushNotificationService {
                               //     builder: (context, AuthNotifier user, child) {
                               InkWell(
                                 onTap: () async {
-                                  if(booking != null && booking.id != null){
-                                    Navigator.of(context)
-                                        .pushNamed(
+                                  if (booking != null && booking.id != null) {
+                                    Navigator.of(context).pushNamed(
                                       Routes.abookingDetails,
-                                      arguments:
-                                      ABookingDetailScreenParams(
+                                      arguments: ABookingDetailScreenParams(
                                           booking: booking),
                                     );
-                                  }else{
-                                    context.nav.pushNamedAndRemoveUntil(Routes.home, (Route<dynamic> route) => false);
+                                  } else {
+                                    context.nav.pushNamedAndRemoveUntil(
+                                        Routes.home,
+                                        (Route<dynamic> route) => false);
                                   }
-
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
@@ -245,35 +243,39 @@ class PushNotificationService {
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                         color: AppColors.primaryColor
-                                      // width: 1, color: AppColors.secondary,
-                                    ),
+                                        // width: 1, color: AppColors.secondary,
+                                        ),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: SizedBox(
                                     height: 15,
                                     child: Center(
-                                      child: _isProcessing ? SizedBox(
-                                          height: 25,
-                                          width: 25,
-                                          child: const CircularProgressIndicator(
-                                            color: AppColors.primaryColor,))
+                                      child: _isProcessing
+                                          ? SizedBox(
+                                              height: 25,
+                                              width: 25,
+                                              child:
+                                                  const CircularProgressIndicator(
+                                                color: AppColors.primaryColor,
+                                              ))
                                           : Text(
-                                        booking != null && booking.id != null ? "View Trip" : "View Active Trips",
-                                        style: TextStyle(
-                                          // fontFamily: AppFonts.manRope,
-                                          color: AppColors.primaryColor,
-                                          // fontFamily: AppFonts.mulishRegular,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w800,
-                                          // color: AppColors.secondary
-                                        ),
-                                      ),
+                                              booking != null &&
+                                                      booking.id != null
+                                                  ? "View Trip"
+                                                  : "View Active Trips",
+                                              style: TextStyle(
+                                                // fontFamily: AppFonts.manRope,
+                                                color: AppColors.primaryColor,
+                                                // fontFamily: AppFonts.mulishRegular,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w800,
+                                                // color: AppColors.secondary
+                                              ),
+                                            ),
                                     ),
                                   ),
                                 ),
-
                               ),
-
                             ],
                           ),
                         ],
@@ -284,14 +286,10 @@ class PushNotificationService {
               ),
             ),
           );
-        }
-    );
-
-
+        });
   }
 
-
-  Future<void> playSoundAndVibrate() async{
+  Future<void> playSoundAndVibrate() async {
     final player = AudioPlayer();
     await player.play(AssetSource('sounds/sample_ringtone.mp3'));
     await Future.delayed(Duration(minutes: 1));
@@ -300,6 +298,4 @@ class PushNotificationService {
       Vibration.vibrate(duration: 6000); // Vibrates for 1 second
     }
   }
-
-
 }

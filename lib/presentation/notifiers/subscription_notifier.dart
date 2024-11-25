@@ -55,8 +55,7 @@ class SubscriptionsNotifier extends ChangeNotifier {
       required this.fetchReportUsecase,
       required this.fetchAddressCoordinateUsecase,
       required this.subscribeUsecase,
-        required this.repository
-      });
+      required this.repository});
   final GetCurrentPositionUsecase currentPositionUsecase;
   final CreateSubscriptionUsecase createSubscriptionUsecase;
   final FetchSubscriptionUsecase fetchSubscriptionUsecase;
@@ -88,7 +87,6 @@ class SubscriptionsNotifier extends ChangeNotifier {
     if (position != null) {
       currentPosition
           .emit(Location(lat: position.latitude, lng: position.longitude));
-
     }
   }
 
@@ -135,7 +133,6 @@ class SubscriptionsNotifier extends ChangeNotifier {
     response.fold(
       (l) {},
       (r) {
-
         Logger().d("${r} user subscription");
         userSubscriptions.emit(r);
       },
@@ -146,13 +143,11 @@ class SubscriptionsNotifier extends ChangeNotifier {
     logger.d('fetching active use subscription');
     final response = await repository.fetchUserActiveSubscription();
     response.fold(
-          (l) {
-
-          },
-          (r) {
-            userActiveSubscriptions.emit(r);
-            notifyListeners();
-           Logger().wtf("${r} user subscription");
+      (l) {},
+      (r) {
+        userActiveSubscriptions.emit(r);
+        notifyListeners();
+        Logger().wtf("${r} user subscription");
       },
     );
   }
@@ -340,41 +335,38 @@ class SubscriptionsNotifier extends ChangeNotifier {
         );
       },
     );
+    return null;
   }
 
-  void dashboard() async{
-    try{
+  void dashboard() async {
+    try {
       final prefs = FlutterSecureStorage();
       final firebaseToken = await prefs.read(key: "firebaseToken");
       var headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${await FlutterSecureStorage().read(key: "token")}'
+        'Authorization':
+            'Bearer ${await FlutterSecureStorage().read(key: "token")}'
       };
-      final response = await Dio().put(
-          'https://api.salamadrive.com/taxi/users/dashboard',
-          options: Options(
-            method: 'PUT',
-            headers: headers,
-          ),
-          data:  {
+      final response =
+          await Dio().put('https://api.salamadrive.com/taxi/users/dashboard',
+              options: Options(
+                method: 'PUT',
+                headers: headers,
+              ),
+              data: {
             "longitude": 211121,
             "latitude": 333,
             "isActive": true,
             "firebaseToken": firebaseToken
-          }
-
-      );
+          });
 
       logger.d(response.data.toString());
 
       logger.d(response.data.toString());
-
-    }on DioException catch(e){
-      logger
-      .e(e.toString());
-    } catch(e){
+    } on DioException catch (e) {
+      logger.e(e.toString());
+    } catch (e) {
       logger.d(e.toString());
     }
-
-}
+  }
 }

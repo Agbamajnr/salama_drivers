@@ -38,15 +38,15 @@ class _ABookingDetailsState extends State<ABookingDetails> {
       context.subsription
           .fetchSingleBooking(bookingId: widget.params.booking.id);
     }
-    if (mounted) {
-      setState(() {});
-    }
+    // if (mounted) {
+    //   setState(() {});
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     final item = context.subsription.booking.value;
-    logger.d(item?.user['name']);
+    logger.d(item?.rideStatus);
     logger.w(widget.params.booking.rideStatus);
     return Scaffold(
         backgroundColor: AppColors.white,
@@ -67,8 +67,13 @@ class _ABookingDetailsState extends State<ABookingDetails> {
               if (snapshot.data == null) {
                 return Center(child: CircularProgressIndicator());
               } else {
+                var booking = widget.params.booking;
+                if (mounted) {
+                  setState(() {
+                    booking = item ?? widget.params.booking;
+                  });
+                }
 
-                final booking = widget.params.booking;
                 return SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
@@ -144,10 +149,10 @@ class _ABookingDetailsState extends State<ABookingDetails> {
                           ),
                           Spacer(),
                           InkWell(
-                            onTap: () async{
-                              await EasyLauncher.call(number: "${item?.user['phone']}");
+                            onTap: () async {
+                              await EasyLauncher.call(
+                                  number: "${item?.user['phone']}");
                             },
-
                             child: Icon(
                               Icons.call,
                               color: Colors.green,
@@ -165,9 +170,13 @@ class _ABookingDetailsState extends State<ABookingDetails> {
                       ),
                       containerRow('From', booking.riderFromAddress),
                       containerRow('To', booking.riderToAddress),
-                     booking.startTime == null ? Container() : containerRow('Ride Start', booking.startTime.toString()),
-                      booking.endTime == null ? Container() : containerRow('Ride', booking.endTime.toString()),
-
+                      booking.startTime == null
+                          ? Container()
+                          : containerRow(
+                              'Ride Start', booking.startTime.toString()),
+                      booking.endTime == null
+                          ? Container()
+                          : containerRow('Ride', booking.endTime.toString()),
                     ],
                   ),
                 );
@@ -267,26 +276,28 @@ class _ABookingDetailsState extends State<ABookingDetails> {
                                         .then((_) {});
                                   }),
                             ),
-                          ) :
-        widget.params.booking.rideStatus == "DRIVING"
-            ? Container(
-          color: AppColors.white,
-          padding: EdgeInsets.symmetric(
-              vertical: 24, horizontal: 20),
-          child: SafeArea(
-            child: BusyButton(
-                color: Colors.red,
-                title: 'End Trip',
-                onTap: () {
-                  context.subsription
-                      .reportbooking(
-                      bookingId: widget.params.booking.id,
-                      message: 'I am reporing this trip')
-                      .then((_) {});
-                }),
-          ),
-        )
-                        : null);
+                          )
+                        : widget.params.booking.rideStatus == "DRIVING"
+                            ? Container(
+                                color: AppColors.white,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 24, horizontal: 20),
+                                child: SafeArea(
+                                  child: BusyButton(
+                                      color: Colors.red,
+                                      title: 'End Trip',
+                                      onTap: () {
+                                        context.subsription
+                                            .reportbooking(
+                                                bookingId:
+                                                    widget.params.booking.id,
+                                                message:
+                                                    'I am reporing this trip')
+                                            .then((_) {});
+                                      }),
+                                ),
+                              )
+                            : null);
   }
 
   Widget containerRow(
