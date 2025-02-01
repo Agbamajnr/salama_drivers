@@ -1,12 +1,14 @@
-import 'package:action_slider/action_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:action_slider/action_slider.dart';
 import 'package:gap/gap.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:salama_users/app/utils/logger.dart';
 import 'package:salama_users/core/extensions/__export.dart';
 import 'package:salama_users/core/extensions/ctx_extension.dart';
 import 'package:salama_users/core/styles/colors.dart';
 import 'package:salama_users/presentation/screens/home/booking_details_page.dart';
 import 'package:salama_users/presentation/widgets/busy_button.dart';
-
 import '../../../core/formatter/formatter.dart';
 import '../../../core/routes/router_names.dart';
 import '../../../domain/entities/subscriptions/booking.dart';
@@ -23,165 +25,119 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   bool active = false;
   final _controller = ActionSliderController();
+  late GoogleMapController mapController;
+
+  LatLng? _currentLocation;
+  bool _isLoading = true;
+
+  // Fallback location: Calabar, Nigeria
+  final LatLng _fallbackLocation = const LatLng(4.9757, 8.3417);
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserLocation();
+  }
+
+  Future<void> _getUserLocation() async {
+    // Check if location services are enabled
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled, use fallback location
+      setState(() {
+        _currentLocation = _fallbackLocation;
+        _isLoading = false;
+      });
+      return;
+    }
+
+    // Check location permissions
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, use fallback location
+        setState(() {
+          _currentLocation = _fallbackLocation;
+          _isLoading = false;
+        });
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are permanently denied, use fallback location
+      setState(() {
+        _currentLocation = _fallbackLocation;
+        _isLoading = false;
+      });
+      return;
+    }
+
+    // Fetch the current location
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      setState(() {
+        _currentLocation = LatLng(position.latitude, position.longitude);
+        logger.d(_currentLocation);
+        _isLoading = false;
+      });
+    } catch (e) {
+      // If an error occurs (e.g., timeout), use fallback location
+      setState(() {
+        _currentLocation = _fallbackLocation;
+        _isLoading = false;
+      });
+      logger.e("Error fetching location: $e");
+    }
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
   @override
   void dispose() {
     _controller.dispose();
+    mapController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-          width: double.infinity,
-          decoration: const BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(
-                    "assets/maps.png",
-                  ),
-                  fit: BoxFit.cover)),
-          child: DraggableScrollableSheet(
-              initialChildSize: 0.6,
-              maxChildSize: 0.95,
-              builder: (context, scrollController) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: Column(
-                    children: [
-                      ActionSlider.standard(
-                        toggleColor: AppColors.white,
-                        sliderBehavior: SliderBehavior.stretch,
-                        controller: _controller,
-                        backgroundColor:
-                            active ? AppColors.primaryColor : AppColors.dark,
-                        boxShadow: [],
-                        backgroundBorderRadius: BorderRadius.circular(0),
-                        child: Text(
-                          active ? 'Slide to Go Online' : 'Slide to Go Offline',
-                          style: TextStyle(color: AppColors.white),
-                        ),
-                        action: (controller) async {
-
-                          setState(() {
-                            !active;
-                          });
-                        },
-                      ),
-                      const Gap(20),
-                      StreamBuilder<List<Booking>?>(
-                          stream: context.subsription.userBookings.stream,
-                          builder: (context, snapshot) {
-                            if (snapshot.data == null) {
-                              return Center(child: CircularProgressIndicator());
-                            } else if (snapshot.data!.isEmpty) {
-                              return Center(
-                                  child:
-                                      EmptyPlaceholder(text: 'No Active Trips'));
-                            } else {
-                              final trips = (snapshot.data as List<Booking>)
-                                  .where(
-                                    (e) => e.rideStatus?.isNotEmpty == true &&
-                                    ["BOOKING", "DRIVING", "DRIVER_ACCEPTED"].contains(e.rideStatus),
-                              )
-                                  .toList();
-
-                              if(trips.isEmpty) {
-                                return Center(
-                                    child:
-                                    EmptyPlaceholder(text: 'No Active Trips'));
-                              }
-
-                              return SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height / 2.5,
-                                child: MediaQuery.removePadding(
-                                  context: context,
-                                  removeTop: true,
-                                  child: ListView.builder(
-                                      itemCount: trips.length,
-                                      itemBuilder: (context, index) {
-                                        final item = trips[index];
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12, vertical: 4),
-                                          child: ListTile(
-                                              onTap: () {
-                                                context.nav.pushNamed(
-                                                  Routes.bookingDetails,
-                                                  arguments:
-                                                      BookingDetailScreenParams(
-                                                          booking: item),
-                                                );
-                                              },
-                                              leading: CircleAvatar(
-                                                backgroundColor:
-                                                    Colors.grey[200],
-                                                child: const Icon(
-                                                    Icons.directions_car,
-                                                    color: AppColors.dark),
-                                              ),
-                                              contentPadding: EdgeInsets.zero,
-                                              title: Flexible(
-                                                child: Text(
-                                                  item.riderFromAddress,
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                              subtitle: Text(
-                                                "₦ ${Formatter.money(
-                                                  double.tryParse(item.amount
-                                                          .toString()) ??
-                                                      0,
-                                                )}",
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              trailing: InkWell(
-                                                onTap: () {
-                                                  Navigator.of(context)
-                                                      .pushNamed(
-                                                    Routes.abookingDetails,
-                                                    arguments:
-                                                        ABookingDetailScreenParams(
-                                                            booking: item),
-                                                  );
-                                                },
-                                                child: Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 12,
-                                                      horizontal: 14),
-                                                  decoration: BoxDecoration(
-                                                      color: item.rideStatus == "BOOKING" ? Colors.green : AppColors
-                                                          .primaryGrey
-                                                          .withOpacity(0.5),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              30)),
-                                                  child: Text(
-                                                    item.rideStatus == "BOOKING" ? 'Accept' : 'View',
-                                                    style: TextStyle(
-                                                        color: AppColors.dark,
-                                                        height: 1
-                                                    ),
-                                                  ),
-                                                ),
-                                              )),
-                                        );
-                                      }),
-                                ),
-                              );
-                            }
-                          }),
-                    ],
-                  ),
-                );
-              })),
+      body: SizedBox(
+        height: MediaQuery.of(context).size.height * 1.0, // Full screen height
+        child: Stack(
+          children: [
+            GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: _currentLocation ?? _fallbackLocation, // Use fallback location if current location is null
+                zoom: 17.0,
+              ),
+              myLocationEnabled: true, // Show the user's location on the map
+              myLocationButtonEnabled: true, // Show the "my location" button
+              markers: _currentLocation != null
+                  ? {
+                Marker(
+                  markerId: const MarkerId("user_location"),
+                  position: _currentLocation!,
+                  infoWindow: const InfoWindow(title: "Your Current Location"),
+                ),
+              }
+                  : {},
+            ),
+            if (_isLoading)
+              const Center(
+                child: CircularProgressIndicator(),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

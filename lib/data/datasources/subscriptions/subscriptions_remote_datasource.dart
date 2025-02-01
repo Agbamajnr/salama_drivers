@@ -201,9 +201,14 @@ class SubscriptionRemoteDatasourceImpl
       Logger().d(response.data);
       final data = response.data['data'] as Map<String, dynamic>;
       final rows = data['rows'] as List;
-      return rows
-          .map((x) => BookingModel.fromJson(x as Map<String, dynamic>))
-          .toList();
+      if(rows.length < 1){
+        return rows
+            .map((x) => BookingModel.fromJson(x as Map<String, dynamic>))
+            .toList();
+      }else{
+        return [];
+      }
+
     } else {
       throw NoInternetException();
     }

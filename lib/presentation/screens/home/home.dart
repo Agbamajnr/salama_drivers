@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:salama_users/core/extensions/ctx_extension.dart';
 import 'package:salama_users/core/styles/colors.dart';
 import 'package:salama_users/firebase_handler.dart';
@@ -18,12 +19,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     PushNotificationService().initialize(context);
+    requestLocationPermission();
     context.subsription.fetchActiveBooking(rideStatus: 'DRIVER_ACCEPTED');
     context.subsription.getCurentPosition();
-    context.subsription.fetchUserActiveSubscriptions();
+    // context.subsription.fetchUserActiveSubscriptions();
     context.subsription.fetchBooking();
     context.subsription.dashboard();
     super.initState();
+  }
+
+  void requestLocationPermission() async{
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return;
+      }
+    }
   }
 
   // List of pages (screens) for each navigation tab

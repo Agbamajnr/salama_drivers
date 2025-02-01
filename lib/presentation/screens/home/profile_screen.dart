@@ -1,4 +1,6 @@
+import 'package:easy_url_launcher/easy_url_launcher.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart'; // Import the url_launcher package
 import 'package:salama_users/core/extensions/ctx_extension.dart';
 import 'package:salama_users/core/styles/colors.dart';
 import 'package:salama_users/domain/entities/auth/person.dart';
@@ -61,7 +63,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             AppNetworkImage(
                 url:
-                    'https://res.cloudinary.com/duwmvd0zh/image/upload/v1715517981/30_kt4jfx.png',
+                'https://res.cloudinary.com/duwmvd0zh/image/upload/v1715517981/30_kt4jfx.png',
                 height: 80,
                 width: 80),
             SizedBox(width: 12),
@@ -98,7 +100,7 @@ class ProfileScreen extends StatelessWidget {
           context,
           Icons.person,
           'Personal Info',
-          () {
+              () {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -110,23 +112,35 @@ class ProfileScreen extends StatelessWidget {
           context,
           Icons.privacy_tip,
           'Privacy',
-          () {
-            AppFlushbar.show('Error in accessing info. Contact Dev');
+              () async {
+            // Launch the privacy policy URL
+            const url = 'https://salamadrive.com/privacy-policy.html';
+            await EasyLauncher.url(
+                url: url
+            );
+            // if (await canLaunch(url)) {
+            //   await launch(url);
+            // } else {
+            //   // Handle the error if the URL cannot be launched
+            //   ScaffoldMessenger.of(context).showSnackBar(
+            //     SnackBar(content: Text('Could not launch $url')),
+            //   );
+            // }
           },
         ),
-        _buildListTile(
-          context,
-          Icons.settings,
-          'Settings',
-          () {
-            AppFlushbar.show('Error in accessing info. Contact Dev');
-          },
-        ),
+        // _buildListTile(
+        //   context,
+        //   Icons.settings,
+        //   'Settings',
+        //       () {
+        //     AppFlushbar.show('Error in accessing info. Contact Dev');
+        //   },
+        // ),
         _buildListTile(
           context,
           Icons.info_outline,
           'About',
-          () {
+              () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => AboutUsPage()),
@@ -135,14 +149,18 @@ class ProfileScreen extends StatelessWidget {
         ),
         _buildListTile(
           context,
-          Icons.person,
+          Icons.delete_forever,
           'Delete Account',
-          () {
-            context.auth.deleteUser().then((_) {
-              context.nav.pushNamedAndRemoveUntil(
-                  Routes.login, (Route<dynamic> route) => false);
-              AppFlushbar.show('Account deleted successfully', isError: false);
-            });
+              () async{
+                const url = 'https://salamadrive.com/confirm-delete.html';
+                await EasyLauncher.url(
+                    url: url
+                );
+            // context.auth.deleteUser().then((_) {
+            //   context.nav.pushNamedAndRemoveUntil(
+            //       Routes.login, (Route<dynamic> route) => false);
+            //   AppFlushbar.show('Account deleted successfully', isError: false);
+            // });
           },
         ),
       ],
@@ -165,7 +183,7 @@ class ProfileScreen extends StatelessWidget {
       title: Text(title,
           style: const TextStyle(color: AppColors.background, fontSize: 16)),
       trailing:
-          const Icon(Icons.arrow_forward_ios, color: AppColors.background),
+      const Icon(Icons.arrow_forward_ios, color: AppColors.background),
     );
   }
 }
